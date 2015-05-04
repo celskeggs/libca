@@ -1,0 +1,1 @@
+Each subfolder specifies the applicable license. See the appropriate subfolder for the appropriate license.
