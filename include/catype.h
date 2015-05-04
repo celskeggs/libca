@@ -3,10 +3,6 @@
 
 #include <caversion.h>
 
-#if !(defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
-# error libca expects C99 or newer.
-#endif
-
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>

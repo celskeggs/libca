@@ -10,8 +10,14 @@
 #define FILE_BINARY TRUE
 
 ioerr openf(stream *c, string filename, bool out, bool binary);
+stream openfq(string filename, bool out, bool binary); // panics on error
+
+ioerr openf_unbuf(stream *c, string filename, bool out, bool binary);
+stream openfq_unbuf(string filename, bool out, bool binary); // panics on error
 
 ioerr removef(string filename);
+void removefq(string filename); // panics on error
 ioerr renamef(string from, string to);
+void renamefq(string from, string to); // panics on error
 
 #endif

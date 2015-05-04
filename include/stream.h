@@ -51,7 +51,7 @@ void writeu64be(stream c, u64 v);
 void writeu64le(stream c, u64 v);
 void writeln(stream c, string str);
 
-bool ateofs(stream c);
+bool ateof(stream c);
 ulen readb(stream c, u8 *bytes, ulen count);
 ulen reads(stream c, mutable_string str, ulen count);
 char readch(stream c);
@@ -62,8 +62,10 @@ u32 readu32be(stream c);
 u32 readu32le(stream c);
 u64 readu64be(stream c);
 u64 readu64le(stream c);
-// returns true if it read an entire line, false otherwise
+// returns true if it read an entire line, false otherwise. strips newline. empty line and return false on EOF.
 bool readln(stream c, mutable_string str, ulen count);
+// returns false on EOF, panics if line is too long.
+bool readlnq(stream c, mutable_string str, ulen count);
 
 i64 tells(stream c);
 void seeksets(stream c);
