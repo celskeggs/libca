@@ -16,7 +16,7 @@ bool system_check(string command);
 bool system_check_nosh(string command, string *args, ulen count);
 // panic if SYS_EXIT_NORMAL would be false
 void systemq(string command);
-viod systemq_nosh(string command, string *args, ulen count);
+void systemq_nosh(string command, string *args, ulen count);
 
 // system exited normally, as opposed to sent a signal
 #define SYS_EXITED(x) (((x) & 0x100) != 0)

@@ -1,36 +1,50 @@
 #ifndef _CATYPE_H
 #define _CATYPE_H
 
+#ifndef __GNUC__
+# warning libca has only been tested on gcc!
+#endif
+
 #include <caversion.h>
 
-#include <stdint.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <limits.h>
+#define bool _Bool
+#define true 1
+#define false 0
 
-#if CHAR_BITS != 8
-# error libca expects 8-bit characters!
+#define offsetof(type, member)  __builtin_offsetof(type, member)
+
+#if !(defined(__CHAR_BIT__)) || __CHAR_BIT__ != 8
+# error 8-bit bytes required!
 #endif
 
-#ifndef NULL
-# define NULL ((void*) 0)
+#define NULL ((void*) 0)
+
+#if !defined(__INT8_TYPE__) || !defined(__INT16_TYPE__) || !defined(__INT32_TYPE__) || !defined(__INT64_TYPE__)
+# error Required types were not defined! Maybe this only works on gcc?
 #endif
 
-typedef uint8_t u8;
-typedef uint16_t u16;
-typedef uint32_t u32;
-typedef uint64_t u64;
-typedef uintptr_t uptr;
-typedef uintptr_t uidx; // array index
-typedef uintptr_t ulen; // array length
+typedef __INT8_TYPE__ i8;
+typedef __INT16_TYPE__ i16;
+typedef __INT32_TYPE__ i32;
+typedef __INT64_TYPE__ i64;
 
-typedef int8_t i8;
-typedef int16_t i16;
-typedef int32_t i32;
-typedef int64_t i64;
-typedef intptr_t iptr;
-typedef intptr_t iidx; // array index
-typedef intptr_t ilen; // array length
+#if !defined(__UINT8_TYPE__) || !defined(__UINT16_TYPE__) || !defined(__UINT32_TYPE__) || !defined(__UINT64_TYPE__)
+# error Required types were not defined! Maybe this only works on gcc?
+#endif
+
+typedef __UINT8_TYPE__ u8;
+typedef __UINT16_TYPE__ u16;
+typedef __UINT32_TYPE__ u32;
+typedef __UINT64_TYPE__ u64;
+
+#if !defined(__UINTPTR_TYPE__) || !defined(__INTPTR_TYPE__) || !defined(__PTRDIFF_TYPE__) || !defined(__SIZE_TYPE__)
+# error Required types were not defined! Maybe this only works on gcc?
+#endif
+
+typedef __UINTPTR_TYPE__ uptr;
+typedef __INTPTR_TYPE__ iptr;
+typedef __PTRDIFF_TYPE__ iptrd; // pointer difference
+typedef __SIZE_TYPE__ ulen; // array length
 
 typedef const char *string;
 typedef char *mutable_string;

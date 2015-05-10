@@ -13,14 +13,15 @@ enum error_type_e {
 typedef struct {
 	enum error_type_e type;
 	u8 exit_code;
-	const char *str;
+	string str;
 } error;
 
 typedef void (*recover_callback)(void *);
 
-error recover(recover_callback cb, void *param);
-void panic(const char *str);
-void panic_static(const char *str);
-void exit(u8 code); // also defined in lifecycle.h
+// return true if an error occurred
+bool recover(recover_callback cb, void *param, error *err_ret);
+void panic(string str) __attribute__((noreturn));
+void panic_static(string str) __attribute__((noreturn));
+void exit(u8 code) __attribute__((noreturn)); // also defined in lifecycle.h
 
 #endif

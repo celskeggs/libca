@@ -7,7 +7,8 @@
 #ifdef NDEBUG
 #define assert(ignore) ((void) 0)
 #else
-#define assert(expr) (expr ? ((void) 0) : panic_static(__FILE__ ":" __LINE__ ": " __func__ ": assertion '" #expr "' failed."))
+#define _assert_fail(expr, file, line) panic_static(#file ":" #line ": assertion '" #expr "' failed."))
+#define assert(expr) (expr ? ((void) 0) : _assert_fail(expr, __FILE__, __LINE__)
 #endif
 
 #endif
