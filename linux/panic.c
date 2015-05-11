@@ -1,5 +1,7 @@
 #include <panic.h>
 #include <stream.h>
+#include <string.h>
+#include <alloc.h>
 #include <libsyscall.h>
 
 static void _panic_do(error err) __attribute__((noreturn));
@@ -18,7 +20,7 @@ void panic(string str) {
 
 // TODO: make this thread-local
 struct recover_stack_entry {
-	struct lsc_saved_registers regs;
+	void *regs;
 	error *ret_error;
 };
 
@@ -28,8 +30,8 @@ static bool is_panicing = false;
 void _panic_do(error err) {
 	if (stack_top == NULL) { // oops! abort! abort!
 		if (is_panicing && err.type != ERR_SYSEXIT) {
-			const char err[] = "top-level exception while handling top-level exception\n";
-			lsc_write(2, err, sizeof(err));
+			const char errs[] = "top-level exception while handling top-level exception\n";
+			lsc_write(2, errs, sizeof(errs));
 			lsc_exit(err.exit_code);
 		}
 		is_panicing = true;
@@ -44,7 +46,7 @@ void _panic_do(error err) {
 			writes(stderr, "top-level exception: ");
 			writes(stderr, err.str);
 			writech(stderr, '\n');
-			free(err.str);
+			free((mutable_string) err.str);
 			lsc_exit(err.exit_code);
 		} else {
 			writes(stderr, "top-level exception, but invalid!\n");
@@ -52,7 +54,7 @@ void _panic_do(error err) {
 		}
 	} else {
 		*stack_top->ret_error = err;
-		lsc_register_restore(stack_top->lsc_saved_registers);
+		lsc_deep_return(stack_top->regs);
 	}
 }
 
@@ -60,11 +62,11 @@ bool recover(recover_callback cb, void *param, error *ret) {
 	struct recover_stack_entry *last = stack_top;
 
 	struct recover_stack_entry new_ent;
-	new_ent.next = stack_top;
 	new_ent.ret_error = ret;
 
-	if (lsc_register_save(&new_ent->regs)) { // return after save
-		cb(param); // could jump back to lsc_register_save.
+	stack_top = &new_ent;
+
+	if (lsc_deep_call(cb, param, &new_ent.regs)) {
 		// success
 		ret->type = ERR_NONE;
 		ret->exit_code = 0;

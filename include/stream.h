@@ -10,7 +10,10 @@ typedef enum {
 	IE_UNKNOWN
 } ioerr;
 
-typedef struct {
+typedef struct _struct_stream_def stream_def;
+typedef stream_def **stream;
+
+struct _struct_stream_def {
 	ioerr (*w_b)(stream, u8*, ulen);
 	ioerr (*w_str)(stream, string, ulen);
 	ioerr (*r_b)(stream, u8*, ulen*);
@@ -22,15 +25,13 @@ typedef struct {
 	ioerr (*check)(stream);
 	ioerr (*flush)(stream);
 	ioerr (*close)(stream);
-} stream_def;
+};
 
 // memory layout of a stream: a pointer to a stream_def pointer followed by stream-specific data.
-typedef stream_def **stream;
 #define STREAM_DATA(c, T) (T*) (((stream_def**) stream) + 1)
 
 ioerr defstream(stream *c, stream_def *def, ulen datasize);
 ioerr openstrin(stream *c, string in);
-ioerr openutfin(stream *c, utf8_string in);
 ioerr openbufin(stream *c, u8 *bytes, ulen count);
 ioerr openbufout(stream *c, u8 *bytes, ulen max, ulen *count);
 

@@ -12,6 +12,7 @@ bool streq(string lhs, string rhs);
 string strchr(string str, u8 chr);
 string strrchr(string str, u8 chr);
 string strstr(string str, string substr);
+mutable_string strdup(string str);
 
 typedef struct {
 	ulen count;
