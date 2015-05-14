@@ -34,7 +34,7 @@ struct _stream {
 };
 
 // memory layout of a stream: a pointer to a stream_def pointer followed by an active error followed by stream-specific data.
-#define STREAM_DATA(c, T) (T*) (((void*) stream) + sizeof(struct _stream))
+#define STREAM_DATA(c, T) ((T*) (((void*) c) + sizeof(struct _stream)))
 
 stream defstream(stream_def *def, ulen datasize);
 stream openstrin(string in);

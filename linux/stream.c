@@ -1,12 +1,23 @@
 #include <stream.h>
+#include <assert.h>
+#include <alloc.h>
+#include <string.h>
+#include <memory.h>
 
 #define MIN(a,b) (a<=b)?a:b
 
 stream defstream(stream_def *def, ulen datasize) {
-	stream out = (stream_def**) malloc(sizeof(struct _stream) + datasize);
-	*out = def;
+	struct _stream *out = (struct _stream *) malloc(sizeof(struct _stream) + datasize);
+	out->def = def;
+	out->err = IE_NONE;
 	return out;
 }
+
+struct string_stream_s {
+	string str;
+	string cur;
+	string end;
+};
 
 static ioerr strin_read(stream c, u8* data, ulen* length) {
 	struct string_stream_s *s = STREAM_DATA(c, struct string_stream_s);
@@ -21,7 +32,7 @@ static bool strin_ateof(stream c) {
 }
 static ioerr strin_tell(stream c, u64* out) {
 	struct string_stream_s *s = STREAM_DATA(c, struct string_stream_s);
-	*out = s->cur - s_str;
+	*out = s->cur - s->str;
 	return IE_NONE;
 }
 static ioerr strin_seek_set(stream c, u64 loc) {
@@ -52,16 +63,14 @@ static ioerr strin_seek_end(stream c, u64 loc) {
 	return IE_OUTOFRANGE;
 }
 
-static stream_def string_stream = (stream_def) { .write=NULL, .read=strin_read, .at_eof=strin_ateof, .p_tell=strin_tell, .p_seek_set=strin_seek_set, .p_seek_rel=strin_seek_rel, .p_seek_end=strin_seek_end, .check=NULL, .flush=NULL, .close=NULL };
+static stream_def string_stream;
 
-struct string_stream_s {
-	string str;
-	string cur;
-	string end;
-};
+static void _init_string_streams() {
+	string_stream = (stream_def) { .write=NULL, .read=&strin_read, .at_eof=&strin_ateof, .p_tell=&strin_tell, .p_seek_set=&strin_seek_set, .p_seek_rel=&strin_seek_rel, .p_seek_end=&strin_seek_end, .check=NULL, .flush=NULL, .close=NULL };
+}
 
 stream openstrin(string str) {
-	stream out = defstream(&string_stream, sizeof(string) + );
+	stream out = defstream(&string_stream, sizeof(struct string_stream_s));
 	STREAM_DATA(out, struct string_stream_s)->str = str;
 	STREAM_DATA(out, struct string_stream_s)->cur = str;
 	STREAM_DATA(out, struct string_stream_s)->end = str + strlen(str);
@@ -115,7 +124,7 @@ ioerr flushs(stream c) {
 	if (c->def->flush != NULL) {
 		return c->def->flush(c);
 	} else if (c->def->check != NULL) {
-		return c->def->checK(c);
+		return c->def->check(c);
 	} else {
 		return IE_NONE;
 	}
@@ -165,7 +174,7 @@ void writeu64be(stream c, u64 v) {
 	u8 vs[] = {(u8) (v >> 56), (u8) (v >> 48), (u8) (v >> 40), (u8) (v >> 32), (u8) (v >> 24), (u8) (v >> 16), (u8) (v >> 8), (u8) v};
 	writeb(c, vs, 8);
 }
-void writeu32le(stream c, u64 v) {
+void writeu64le(stream c, u64 v) {
 	u8 vs[] = {(u8) v, (u8) (v >> 8), (u8) (v >> 16), (u8) (v >> 24), (u8) (v >> 32), (u8) (v >> 40), (u8) (v >> 48), (u8) (v >> 56)};
 	writeb(c, vs, 8);
 }
@@ -271,6 +280,7 @@ extern stream openfd(u64 fd, bool out, bool binary);
 static void _init_streams(void) __attribute__((constructor));
 
 static void _init_streams(void) {
+	_init_string_streams();
 	// TODO: buffering?
 	stdin = openfd(0, false, false);
 	stdout = openfd(1, true, false);
