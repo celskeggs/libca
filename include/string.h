@@ -7,6 +7,7 @@
 mutable_string strmov(mutable_string restrict dest, ulen max, string restrict src);
 mutable_string strapnd(mutable_string restrict dest, ulen max, string restrict src);
 ulen strlen(string str);
+ulen strnlen(string str, ulen max);
 i16 strcmp(string lhs, string rhs);
 bool streq(string lhs, string rhs);
 string strchr(string str, u8 chr);

@@ -20,4 +20,7 @@ void removefq(string filename); // panics on error
 ioerr renamef(string from, string to);
 void renamefq(string from, string to); // panics on error
 
+// private: stream openfd(u64 fd, bool out, bool binary);
+// referenced from stream.c
+
 #endif
