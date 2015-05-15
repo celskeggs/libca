@@ -1,0 +1,5 @@
+Everything in this "linux" folder is licensed under the LGPL.
+
+See COPYING.LGPL and COPYING.GPL in the project root.
+
+Other folders may be licensed under different licenses.
