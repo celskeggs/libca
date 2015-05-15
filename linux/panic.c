@@ -27,7 +27,7 @@ struct recover_stack_entry {
 static struct recover_stack_entry *stack_top = NULL;
 static bool is_panicing = false;
 
-void _panic_do(error err) {
+static void _panic_do(error err) {
 	if (stack_top == NULL) { // oops! abort! abort!
 		if (is_panicing && err.type != ERR_SYSEXIT) {
 			const char errs[] = "top-level exception while handling top-level exception\n";

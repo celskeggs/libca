@@ -24,9 +24,12 @@ void *malloc_zeroed_a(memory_arena *arena, ulen size);
 void *realloc_a(memory_arena *arena, void *memory, ulen size);
 void free_a(memory_arena *arena, void *target);
 
-void new_default_arena(memory_arena *arena, ulen approximate_size);
-void new_slab_arena(memory_arena *arena, ulen element_size, ulen element_count); // only allows elements of the specified size
-void new_nofree_arena(memory_arena *arena, ulen approximate_size); // cannot be freed. but faster! can be deallocated.
+memory_arena *get_global_arena(void);
+
+void new_default_arena(memory_arena *arena);
+void new_default_arena_with_capacity(memory_arena *arena, ulen starting_capacity);
+void new_slab_arena(memory_arena *arena, ulen element_size, ulen starting_count); // only allows elements of the specified size
+void new_nofree_arena(memory_arena *arena, ulen starting_capacity); // cannot be freed. but faster! can be deallocated.
 void new_custom_arena(memory_arena *arena, void *custom_data); // just NULLs out the fields and sets the custom data
 void deallocate_arena(memory_arena *arena);
 

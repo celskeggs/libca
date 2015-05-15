@@ -1,4 +1,6 @@
 #include <string.h>
+#include <memory.h>
+#include <alloc.h>
 
 ulen strlen(string str) {
 	ulen out = 0;
@@ -14,6 +16,12 @@ ulen strnlen(string str, ulen max) {
 	}
 	return out;
 }
+mutable_string strdup(string str) {
+	ulen len = strlen(str);
+	mutable_string out = (mutable_string) malloc(len + 1);
+	memcpy(out, str, len);
+	return out;
+}
 
 /* TODO
 mutable_string strmov(mutable_string restrict dest, ulen max, string restrict src);
@@ -23,7 +31,6 @@ bool streq(string lhs, string rhs);
 string strchr(string str, u8 chr);
 string strrchr(string str, u8 chr);
 string strstr(string str, string substr);
-mutable_string strdup(string str);
 
 typedef struct {
 	ulen count;
