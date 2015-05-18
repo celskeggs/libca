@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2015 Colby Skeggs
+ * This file is part of libca, and is licensed under the MIT license.
+ * See LICENSE.txt for details.
+ */
+
 #ifndef _RANDOM_H
 #define _RANDOM_H
 
