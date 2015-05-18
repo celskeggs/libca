@@ -1,6 +1,6 @@
 CFLAGS=-nostdlib -nostdinc -std=c99 -I../include -I../libsyscall-built -fno-builtin
 
-OBJS=begin.o panic.o stream.o string.o alloc.o memory.o dlmalloc-2.8.6/interface.o
+OBJS=begin.o panic.o stream.o string.o alloc.o memory.o file.o dlmalloc-2.8.6/interface.o
 
 libca.a: $(OBJS)
 	mkdir libsyscall

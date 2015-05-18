@@ -10,14 +10,25 @@
 #include <catype.h>
 #include <stdarg.h>
 
+typedef u32 ioerr;
+#define IE_GET(x) (((u32) (x)) & 0xFF)
+#define IE_SYSGET(x) (((u32) (x)) >> 8)
+#define IE_MAKE(x) ((u8) (x))
+#define _IE_MAKE_SYS(x, s) (((u8) (x)) | (s << 8))
+
 typedef enum {
 	// these match up with ie_name's implementation in stream.c
 	IE_NONE=0,
-	IE_FILENOTFOUND,
+	IE_NOTFOUND,
 	IE_OUTOFRANGE,
 	IE_UNSUPPORTED,
+	IE_DENIED,
+	IE_FAULT,
+	IE_INVALID, // as in, state
+	IE_BUSY,
+	IE_FULL,
 	IE_UNKNOWN
-} ioerr;
+} ioerr_local;
 
 typedef struct _struct_stream_def stream_def;
 typedef struct _stream *stream;
@@ -26,10 +37,10 @@ struct _struct_stream_def {
 	ioerr (*write)(stream, const u8*, ulen);
 	ioerr (*read)(stream, u8*, ulen*); // at_eof will be checked before this is called
 	bool (*at_eof)(stream);
-	ioerr (*p_tell)(stream, u64*);
-	ioerr (*p_seek_set)(stream, u64);
+	ioerr (*p_tell)(stream, i64*);
+	ioerr (*p_seek_set)(stream, i64);
 	ioerr (*p_seek_rel)(stream, i64);
-	ioerr (*p_seek_end)(stream, u64);
+	ioerr (*p_seek_end)(stream, i64);
 	ioerr (*check)(stream); // check defaults to no-op if set to NULL.
 	ioerr (*flush)(stream); // flush defaults to check if set to NULL.
 	ioerr (*close)(stream); // close defaults to flush if set to NULL.
