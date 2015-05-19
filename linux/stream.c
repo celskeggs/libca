@@ -48,12 +48,12 @@ static ioerr strin_read(stream c, u8* data, ulen* length) {
 static bool strin_ateof(stream c) {
 	return STREAM_DATA(c, struct string_stream_s)->cur[0] == '\0';
 }
-static ioerr strin_tell(stream c, u64* out) {
+static ioerr strin_tell(stream c, i64* out) {
 	struct string_stream_s *s = STREAM_DATA(c, struct string_stream_s);
 	*out = s->cur - s->str;
 	return IE_NONE;
 }
-static ioerr strin_seek_set(stream c, u64 loc) {
+static ioerr strin_seek_set(stream c, i64 loc) {
 	struct string_stream_s *s = STREAM_DATA(c, struct string_stream_s);
 	string nstr = s->str + loc;
 	if (nstr < s->str || nstr > s->end) {
@@ -71,7 +71,7 @@ static ioerr strin_seek_rel(stream c, i64 loc) {
 	s->cur = nstr;
 	return IE_NONE;
 }
-static ioerr strin_seek_end(stream c, u64 loc) {
+static ioerr strin_seek_end(stream c, i64 loc) {
 	struct string_stream_s *s = STREAM_DATA(c, struct string_stream_s);
 	string nstr = s->end - loc;
 	if (nstr < s->str || nstr > s->end) {
@@ -84,7 +84,16 @@ static ioerr strin_seek_end(stream c, u64 loc) {
 static stream_def string_stream;
 
 static void _init_string_streams() {
-	string_stream = (stream_def) { .write=NULL, .read=&strin_read, .at_eof=&strin_ateof, .p_tell=&strin_tell, .p_seek_set=&strin_seek_set, .p_seek_rel=&strin_seek_rel, .p_seek_end=&strin_seek_end, .check=NULL, .flush=NULL, .close=NULL };
+	string_stream.write = NULL;
+	string_stream.read = &strin_read;
+	string_stream.at_eof = &strin_ateof;
+	string_stream.p_tell = &strin_tell;
+	string_stream.p_seek_set = &strin_seek_set;
+	string_stream.p_seek_rel = &strin_seek_rel;
+	string_stream.p_seek_end = &strin_seek_end;
+	string_stream.check = NULL;
+	string_stream.flush = NULL;
+	string_stream.close = NULL;
 }
 
 stream openstrin(string str) {
@@ -114,7 +123,7 @@ bool ateof(stream c) {
 }
 ulen readb(stream c, u8 *bytes, ulen count) {
 	CHECKERR(read,0)
-	if (ateof(c)) {
+	if (count == 0 || ateof(c)) {
 		return 0;
 	}
 	c->err = c->def->read(c, bytes, &count);
@@ -160,10 +169,10 @@ ioerr checks(stream c) {
 
 // extended interface
 void writes(stream c, string str) {
-	writeb(c, str, strlen(str));
+	writeb(c, (u8*) str, strlen(str));
 }
 void writesn(stream c, string str, ulen max) {
-	writeb(c, str, strnlen(str, max));
+	writeb(c, (u8*) str, strnlen(str, max));
 }
 void writech(stream c, char ch) {
 	u8 uch = ch;
@@ -201,7 +210,7 @@ void writeln(stream c, string str) {
 	writech(c, '\n');
 }
 ulen reads(stream c, mutable_string str, ulen count) {
-	count = readb(c, str, count - 1);
+	count = readb(c, (u8*) str, count - 1);
 	str[count] = '\0';
 	return count;
 }
@@ -262,7 +271,7 @@ void closesq(stream c) {
 	}
 }
 
-static string ie_names[] = {"no error", "not found", "out of range", "unsupported", "denied", "fault", "invalid", "busy", "full", "unknown"};
+static string ie_names[] = {"no error", "not found", "out of range", "unsupported", "denied", "fault", "invalid", "busy", "full", "stream closed", "unknown"};
 static string local_names[] = {"No error", "Operation not permitted", "No such file or directory", "No such process", "Interrupted system call", "I/O error", "No such device or address", "Argument list too long", "Exec format error", "Bad file number", "No child processes", "Try again", "Out of memory", "Permission denied", "Bad address", "Block device required", "Device or resource busy", "File exists", "Cross-device link", "No such device", "Not a directory", "Is a directory", "Invalid argument", "File table overflow", "Too many open files", "Not a typewriter", "Text file busy", "File too large", "No space left on device", "Illegal seek", "Read-only file system", "Too many links", "Broken pipe", "Math argument out of domain of func", "Math result not representable", "Resource deadlock would occur", "File name too long", "No record locks available", "Function not implemented", "Directory not empty", "Too many symbolic links encountered", "Operation would block", "No message of desired type", "Identifier removed", "Channel number out of range", "Level 2 not synchronized", "Level 3 halted", "Level 3 reset", "Link number out of range", "Protocol driver not attached", "No CSI structure available", "Level 2 halted", "Invalid exchange", "Invalid request descriptor", "Exchange full", "No anode", "Invalid request code", "Invalid slot", "Resource deadlock would occur", "Bad font file format", "Device not a stream", "No data available", "Timer expired", "Out of streams resources", "Machine is not on the network", "Package not installed", "Object is remote", "Link has been severed", "Advertise error", "Srmount error", "Communication error on send", "Protocol error", "Multihop attempted", "RFS specific error", "Not a data message", "Value too large for defined data type", "Name not unique on network", "File descriptor in bad state", "Remote address changed", "Can not access a needed shared library", "Accessing a corrupted shared library", ".lib section in a.out corrupted", "Attempting to link in too many shared libraries", "Cannot exec a shared library directly", "Illegal byte sequence", "Interrupted system call should be restarted", "Streams pipe error", "Too many users", "Socket operation on non-socket", "Destination address required", "Message too long", "Protocol wrong type for socket", "Protocol not available", "Protocol not supported", "Socket type not supported", "Operation not supported on transport endpoint", "Protocol family not supported", "Address family not supported by protocol", "Address already in use", "Cannot assign requested address", "Network is down", "Network is unreachable", "Network dropped connection because of reset", "Software caused connection abort", "Connection reset by peer", "No buffer space available", "Transport endpoint is already connected", "Transport endpoint is not connected", "Cannot send after transport endpoint shutdown", "Too many references: cannot splice", "Connection timed out", "Connection refused", "Host is down", "No route to host", "Operation already in progress", "Operation now in progress", "Stale file handle", "Structure needs cleaning", "Not a XENIX named type file", "No XENIX semaphores available", "Is a named type file", "Remote I/O error", "Quota exceeded", "No medium found", "Wrong medium type", "Operation Canceled", "Required key not available", "Key has expired", "Key has been revoked", "Key was rejected by service", "Owner died", "State not recoverable", "Operation not possible due to RF-kill", "Memory page has hardware error"};
 
 string ie_name(ioerr err) {
@@ -271,10 +280,10 @@ string ie_name(ioerr err) {
 	if (sys >= 1 && sys < (sizeof(local_names) / sizeof(string))) {
 		return local_names[sys];
 	}
-	if (err < 0 || err >= (sizeof(ie_names) / sizeof(string))) {
+	if (ie < 0 || ie >= (sizeof(ie_names) / sizeof(string))) {
 		return "invalid IO error";
 	}
-	return ie_names[err];
+	return ie_names[ie];
 }
 
 /* TODO

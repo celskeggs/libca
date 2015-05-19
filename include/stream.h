@@ -27,6 +27,7 @@ typedef enum {
 	IE_INVALID, // as in, state
 	IE_BUSY,
 	IE_FULL,
+	IE_CLOSED,
 	IE_UNKNOWN
 } ioerr_local;
 

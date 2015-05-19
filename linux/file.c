@@ -24,7 +24,15 @@ static void _init_filedef() __attribute__((constructor));
 
 static stream_def fdfile_write, fdfile_read;
 
-#define FD(x) (*STREAM_DATA(x, u32))
+struct stream_data {
+	u32 fd;
+	bool closed;
+	bool ateof;
+};
+
+#define FD(x) (STREAM_DATA(x, struct stream_data)->fd)
+#define CLOSED(x) (STREAM_DATA(x, struct stream_data)->closed)
+#define ATEOF(x) (STREAM_DATA(x, struct stream_data)->ateof)
 
 static ioerr locals[] = {
 /*   0 */ IE_NONE, IE_DENIED, IE_NOTFOUND, IE_NOTFOUND,
@@ -66,7 +74,10 @@ static ioerr complete_error(u16 err) {
 	return _IE_MAKE_SYS((err < (sizeof(locals) / sizeof(ioerr))) ? locals[err] : IE_UNKNOWN, err);
 }
 
+#define CHECKERR if (CLOSED(c)) { return IE_MAKE(IE_CLOSED); }
+
 static ioerr fdwrite(stream c, const u8 *data, ulen count) {
+	CHECKERR
 	lsc_int_t result;
 restart:
 	result = lsc_write(FD(c), data, count);
@@ -84,7 +95,12 @@ restart:
 	goto restart; // try to write the rest of it
 }
 
+#define SEEK_SET 0
+#define SEEK_CUR 1
+#define SEEK_END 2
+
 static ioerr fdtell(stream c, i64 *out) {
+	CHECKERR
 	lsc_int_t result = lsc_lseek(FD(c), 0, SEEK_CUR);
 	if (result < 0) {
 		return complete_error(-result);
@@ -94,23 +110,68 @@ static ioerr fdtell(stream c, i64 *out) {
 }
 
 static ioerr fdseekset(stream c, i64 where) {
+	CHECKERR
 	lsc_int_t result = lsc_lseek(FD(c), where, SEEK_SET);
 	return complete_error(-result);
 }
 
 static ioerr fdseekrel(stream c, i64 where) {
+	CHECKERR
 	lsc_int_t result = lsc_lseek(FD(c), where, SEEK_CUR);
 	return complete_error(-result);
 }
 
 static ioerr fdseekend(stream c, i64 where) {
+	CHECKERR
 	lsc_int_t result = lsc_lseek(FD(c), where, SEEK_END);
 	return complete_error(-result);
 }
 
-static ioerr fdflush(stream c, i64 where) {
+static ioerr fdflush(stream c) {
+	CHECKERR
 	lsc_int_t result = lsc_fsync(FD(c));
 	return complete_error(-result);
+}
+
+static ioerr fdclose(stream c) {
+	CHECKERR
+	lsc_int_t result1 = lsc_fsync(FD(c));
+	lsc_int_t result2 = lsc_close(FD(c));
+	CLOSED(c) = true;
+	if (result2 == 0) {
+		return complete_error(-result1);
+	} else {
+		return complete_error(-result2); // result2 takes precedence
+	}
+}
+
+static ioerr fdread(stream c, u8 *buffer, ulen *count) {
+	CHECKERR
+	if (count == 0) {
+		return IE_NONE;
+	}
+	lsc_int_t actual;
+restart:
+	actual = lsc_read(FD(c), buffer, *count);
+	if (actual > 0) {
+		*count = actual;
+		ATEOF(c) = false;
+		return IE_NONE;
+	} else if (actual == 0) {
+		*count = 0;
+		ATEOF(c) = true;
+		return IE_NONE;
+	} else if (actual == -4) { // EINTR
+		goto restart;
+	} else {
+		*count = 0;
+		return complete_error(-actual);
+	}
+}
+
+static bool fdateof(stream c) {
+	CHECKERR
+	return ATEOF(c);
 }
 
 static void _init_filedef() {
@@ -138,7 +199,7 @@ static void _init_filedef() {
 }
 
 stream _libca_openfd(u32 fd, bool out) {
-	stream str = defstream(out ? &fdfile_write : &fdfile_read, sizeof(fd_t));
+	stream str = defstream(out ? &fdfile_write : &fdfile_read, sizeof(struct stream_data));
 	FD(str) = fd;
 	return str;
 }
