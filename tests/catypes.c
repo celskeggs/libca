@@ -19,6 +19,7 @@
 # error Asserts are required!
 #endif
 #include <assert.h>
+#include <stream.h>
 #include <system.h>
 
 CAMAIN0() {
@@ -29,7 +30,7 @@ CAMAIN0() {
 	assert(a == 127);
 	a++;
 	assert(a == 128);
-	a += 128;
+	a += 127;
 	assert(a == 255);
 	a++;
 	assert(a == 0);
@@ -101,6 +102,10 @@ CAMAIN0() {
 	}
 
 	// TODO: this for u64, i64, uptr, iptr, uidx, iidx, ulen, ilen.
+
+	writes(stdout, "Hello, World!\n");
+
+	assert(false);
 
 	return 0;
 }

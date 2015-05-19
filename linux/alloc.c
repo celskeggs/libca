@@ -22,9 +22,7 @@
 
 static memory_arena global;
 
-static void _init_alloc() __attribute__((constructor));
-
-static void _init_alloc() {
+void _init_alloc() { // called from begin.c
 	new_default_arena(&global);
 }
 

@@ -13,7 +13,8 @@
 #ifdef NDEBUG
 #define assert(ignore) ((void) 0)
 #else
-#define _assert_fail(expr, file, line) panic_static(#file ":" #line ": assertion '" #expr "' failed."))
+#define _assert_fail_tostring(x) #x
+#define _assert_fail(expr, file, line) panic_static(file ":" _assert_fail_tostring(line) ": assertion '" #expr "' failed."))
 #define assert(expr) (expr ? ((void) 0) : _assert_fail(expr, __FILE__, __LINE__)
 #endif
 
