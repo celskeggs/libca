@@ -30,7 +30,7 @@ struct clock_struct {
 };
 
 void normalize_clock_struct(struct clock_struct *cstr);
-i64 make_clock(struct clock_struct cstr);
+i64 make_clock(struct clock_struct cstr); // TODO: utc versus local
 
 #define DEFAULT_CLOCK_FORMAT "%c"
 

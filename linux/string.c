@@ -34,9 +34,9 @@ ulen strnlen(string str, ulen max) {
 	return out;
 }
 mutable_string strdup(string str) {
-	ulen len = strlen(str);
-	mutable_string out = (mutable_string) malloc(len + 1);
-	memcpy(out, str, len);
+	ulen count = strlen(str) + 1;
+	mutable_string out = (mutable_string) malloc(count);
+	memcpy(out, str, count);
 	return out;
 }
 

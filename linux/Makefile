@@ -1,4 +1,4 @@
-CFLAGS=-nostdlib -nostdinc -std=c99 -I../include -I../libsyscall-built -fno-builtin -Wall -ggdb
+CFLAGS=-O2 -nostdlib -nostdinc -std=c99 -I../include -I../libsyscall-built -fno-builtin -Wall
 
 OBJS=begin.o panic.o stream.o string.o alloc.o memory.o file.o dlmalloc-2.8.6/interface.o
 

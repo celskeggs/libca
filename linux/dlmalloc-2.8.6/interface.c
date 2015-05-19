@@ -52,7 +52,7 @@ static void *mmap(void *addr, size_t len, int prot, int flags, int fd, iptr off)
 	return out;
 # else
 #  ifdef LSC_64BIT
-	out =  lsc_mmap(addr, len, prot, flags, fd, off);
+	out = lsc_mmap(addr, len, prot, flags, fd, off);
 	if (((u64) out) >= 0xFFFFFFFFFFFFF000) { // an error - the last page in memory is never mapped by the kernel.
 		return (void*) -1;
 	}

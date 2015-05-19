@@ -19,7 +19,6 @@
 
 void *memset(void *buf, u8 chr, ulen count) {
 	u8 *u8b = (u8*) buf;
-	// TODO: what if count is UINT_MAX?
 	for (ulen i = 0; i < count; i++) {
 		u8b[i] = chr;
 	}
@@ -28,7 +27,6 @@ void *memset(void *buf, u8 chr, ulen count) {
 void *memcpy(void *restrict dst, const void *restrict src, ulen count) {
 	const u8 *u8s = (const u8*) src;
 	u8 *u8d = (u8*) dst;
-	// TODO: what if count is UINT_MAX?
 	for (ulen i = 0; i < count; i++) {
 		u8d[i] = u8s[i];
 	}

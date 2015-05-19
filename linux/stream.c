@@ -210,6 +210,9 @@ void writeln(stream c, string str) {
 	writech(c, '\n');
 }
 ulen reads(stream c, mutable_string str, ulen count) {
+	if (count == 0) {
+		return 0;
+	}
 	count = readb(c, (u8*) str, count - 1);
 	str[count] = '\0';
 	return count;
