@@ -1,0 +1,199 @@
+To test:
+
+see subdirectories
+
+alloc.h:
+	void *malloc(ulen size);
+	void *malloc_zeroed(ulen size);
+	void *realloc(void *ptr, ulen size);
+	void free(void *target);
+	void *malloc_a(memory_arena *arena, ulen size);
+	void *malloc_zeroed_a(memory_arena *arena, ulen size);
+	void *realloc_a(memory_arena *arena, void *memory, ulen size);
+	void free_a(memory_arena *arena, void *target);
+	memory_arena *get_global_arena(void);
+	void new_default_arena(memory_arena *arena);
+	void new_default_arena_with_capacity(memory_arena *arena, ulen starting_capacity);
+	void new_slab_arena(memory_arena *arena, ulen element_size, ulen starting_count); // only allows elements of the specified size
+	void new_nofree_arena(memory_arena *arena, ulen starting_capacity); // cannot be freed. but faster! can be deallocated.
+	void new_custom_arena(memory_arena *arena, void *custom_data); // just NULLs out the fields and sets the custom data
+	void deallocate_arena(memory_arena *arena);
+
+ascii.h:
+	bool isdigit(int x);
+	#define isdigit(x) ((_ASCII_TAB[x & 255] & 96) == 32)
+	bool islower(int x);
+	#define islower(x) ((_ASCII_TAB[x & 255] & 192) == 64)
+	bool isupper(int x);
+	#define isupper(x) ((_ASCII_TAB[x & 255] & 128) != 0)
+	bool isalpha(int x);
+	#define isalpha(x) ((_ASCII_TAB[x & 255] & 64) != 0)
+	bool isalnum(int x);
+	#define isalnum(x) ((_ASCII_TAB[x & 255] & 96) != 0)
+	bool isxdigit(int x);
+	#define isxdigit(x) ((_ASCII_TAB[x & 255] & 32) != 0)
+	bool iscntrl(int x);
+	#define iscntrl(x) ((_ASCII_TAB[x & 255] & 1) != 0)
+	bool isgraph(int x);
+	#define isgraph(x) ((_ASCII_TAB[x & 255] & 112) != 0)
+	bool isspace(int x);
+	#define isspace(x) ((_ASCII_TAB[x & 255] & 14) != 0)
+	bool isblank(int x);
+	#define isblank(x) ((_ASCII_TAB[x & 255] & 10) != 0)
+	bool isprint(int x);
+	#define isprint(x) ((_ASCII_TAB[x & 255] & 120) != 0)
+	bool ispunct(int x);
+	#define ispunct(x) ((_ASCII_TAB[x & 255] & 16) != 0)
+	bool isascii(int x);
+	#define isascii(x) (_ASCII_TAB[x & 255] != 0)
+
+	int tolower(int x);
+	int toupper(int x);
+
+assert.h:
+	assert with NDEBUG
+	assert without NDEBUG
+
+catype.h:
+	bool, true, false
+	offsetof
+	NULL
+	u8-u64, i8-i64, uptr, iptr, iptrd, ulen
+	string
+	mutable_string
+
+caversion.h:
+	LIBCA_MAJOR
+	LIBCA_MINOR
+	LIBCA_PATCH
+	LIBCA_VERSION
+
+clock.h:
+	struct clock_result get_clock(enum clock_type type);
+	void normalize_clock_struct(struct clock_struct *cstr);
+	i64 make_clock(struct clock_struct cstr); // TODO: utc versus local
+	#define DEFAULT_CLOCK_FORMAT "%c"
+
+	void format_clock_struct(string format, mutable_string out, ulen max, struct clock_struct cstr);
+	void format_clock(string format, mutable_string out, ulen max, i64 clock);
+	struct clock_struct utc_clock(i64 clock);
+	struct clock_struct local_clock(i64 clock);
+
+file.h:
+	ioerr openf(stream *c, string filename, bool out);
+	stream openfq(string filename, bool out); // panics on error
+
+	ioerr openf_unbuf(stream *c, string filename, bool out);
+	stream openfq_unbuf(string filename, bool out); // panics on error
+
+	ioerr removef(string filename);
+	void removefq(string filename); // panics on error
+	ioerr renamef(string from, string to);
+	void renamefq(string from, string to); // panics on error
+
+memory.h:
+	void *memset(void *buf, u8 chr, ulen count);
+	void *memset_c(void *dest, ulen max, u8 chr, ulen count);
+	void *memcpy(void *restrict dst, const void *restrict src, ulen count);
+	void *memcpy_c(void *restrict dst, ulen max, const void *restrict src, ulen count);
+	void *memmove(void *restrict dst, const void *restrict src, ulen count);
+	void *memmove_c(void *restrict dst, ulen max, const void *restrict src, ulen count);
+	void *memcmp(const void *lhs, const void *rhs, ulen count);
+	void *memchr(const void *ptr, u8 chr, ulen count);
+
+panic.h:
+	bool recover(recover_callback cb, void *param, error *err_ret);
+	void panic(string str) __attribute__((noreturn));
+	void panic_static(string str) __attribute__((noreturn));
+	void exit(u8 code) __attribute__((noreturn)); // also defined in lifecycle.h
+
+random.h:
+	u32 random();
+	void random_seed(u32 seed);
+
+	random_state random_new(u32 seed);
+	u32 random_next(random_state rand);
+	void random_destroy(random_state rand);
+
+stream.h:
+	stream defstream(stream_def *def, ulen datasize);
+	stream openstrin(string in);
+	ioerr openbufin(stream *c, u8 *bytes, ulen count);
+	ioerr openbufout(stream *c, u8 *bytes, ulen max, ulen *count);
+
+	ioerr bufferstream(stream base, stream *nstr, bool flush_on_newline, ulen bufsize);
+
+	void writeb(stream c, const u8 *bytes, ulen count);
+	void writes(stream c, string str);
+	void writesn(stream c, string str, ulen max);
+	void writesf(stream c, string fmt, ...);
+	void writesfv(stream c, string fmt, va_list args);
+	void writech(stream c, char ch);
+	void writeu8(stream c, u8 v);
+	void writeu16be(stream c, u16 v);
+	void writeu16le(stream c, u16 v);
+	void writeu32be(stream c, u32 v);
+	void writeu32le(stream c, u32 v);
+	void writeu64be(stream c, u64 v);
+	void writeu64le(stream c, u64 v);
+	void writeln(stream c, string str);
+
+	bool ateof(stream c); // return true if EOF or error - does not clear error
+	ulen readb(stream c, u8 *bytes, ulen count); // return number of bytes actually read - 0 means EOF or error
+	ulen reads(stream c, mutable_string str, ulen count); // return number of bytes actually read (not including null pointer) - 0 means EOF or error
+	char readch(stream c); // return 0 on EOF or error, otherwise return character that was read. NOTE THAT THIS IS AMBIGUOUS IF YOU HAVE BINARY INPUT!
+	u8 readu8(stream c);
+	u16 readu16be(stream c);
+	u16 readu16le(stream c);
+	u32 readu32be(stream c);
+	u32 readu32le(stream c);
+	u64 readu64be(stream c);
+	u64 readu64le(stream c);
+	bool readln(stream c, mutable_string str, ulen count);
+	bool readlnq(stream c, mutable_string str, ulen count);
+
+	ioerr tells(stream c, u64 *out);
+	u64 tellsq(stream c);
+	ioerr seeksets(stream c, u64 rel);
+	void seeksetsq(stream c, u64 rel);
+	ioerr seekrels(stream c, i64 rel);
+	void seekrelsq(stream c, i64 rel);
+	ioerr seekrevs(stream c, u64 rel);
+	void seekrevsq(stream c, u64 rel);
+
+	ioerr checks(stream c);
+	void checksq(stream c);
+	ioerr flushs(stream c);
+	void flushsq(stream c);
+	ioerr closes(stream c);
+	void closesq(stream c);
+
+	string ie_name(ioerr error);
+
+	extern stream stdin, stdout, stderr;
+
+system.h:
+	u32 system(string command); // with sh -c
+	u32 system_nosh(string command, string *args, ulen count); // raw
+	bool system_check(string command);
+	bool system_check_nosh(string command, string *args, ulen count);
+	void systemq(string command);
+	void systemq_nosh(string command, string *args, ulen count);
+	
+	#define SYS_EXITED(x) (((x) & 0x100) != 0)
+	#define SYS_CODE(x) ((x) & 0xFF)
+	#define SYS_EXIT_NORMAL(x) (((x) & 0x1FF) == 0x100)
+	
+	u32 get_argument_count(void);
+	string get_argument(u32 id);
+	string get_argument_opt(u32 id, string defarg);
+	string *get_arguments(void);
+	string get_program_reference(void);
+	
+	extern u8 camain(u32 count, string *args);
+	
+	#define CAMAIN(count, args) u8 camain(u32 count, string *args)
+	#define CAMAIN0() u8 camain(u32 __c, string *__a)
+	
+	extern struct _force_undef_type {} main(void); // main should not be defined in a libca program.
+
