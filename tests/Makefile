@@ -8,12 +8,20 @@ BITS=32
 endif
 endif
 
-ifdef BITS
-CFLAGS=-O2 -m$(BITS) -nostdlib -nostdinc -ffreestanding -I../include -std=c99 -Wall
+echo=echo -e "\e[1;3$(1)m[$(2)] $(3)\e[0m"
 
-catypes: catypes.c
-	gcc catypes.c $(CFLAGS) ../linux/libca.a -o catypes
-#	strip -s -R .comment -R .eh_frame -R .eh_frame_hdr catypes
+DIRS=$(shell echo */)
+
+ifdef BITS
+
+.PHONY: all $(DIRS)
+
+all: $(DIRS)
+
+$(DIRS): %:
+	@$(call echo,3,ATTEMPTING SUITE,$(@:/=))
+	@(cd $@ && make BITS=$(BITS)) || ($(call echo,1,FAILED SUITE,$(@:/=)) && exit 1)
+	@$(call echo,2,PASSED SUITE,$(@:/=))
 
 else
 
@@ -23,5 +31,11 @@ main:
 
 endif
 
-clean:
-	rm -f catypes
+CLEAN_DIRS=$(addprefix clean_,$(DIRS))
+
+.PHONY: clean $(CLEAN_DIRS)
+
+clean: $(CLEAN_DIRS)
+
+$(CLEAN_DIRS): clean_%:
+	cd $(@:clean_%=%) && make clean

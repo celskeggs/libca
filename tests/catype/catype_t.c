@@ -103,9 +103,5 @@ CAMAIN0() {
 
 	// TODO: this for u64, i64, uptr, iptr, uidx, iidx, ulen, ilen.
 
-	writes(stdout, "Hello, World!\n");
-
-	assert(false);
-
 	return 0;
 }
