@@ -18,6 +18,10 @@
 #include <system.h>
 #include <assert.h>
 #include <string.h>
+#include <alloc.h>
+
+// temporary
+#include <stream.h>
 
 /* Tests for strcmp, streq */
 
@@ -36,6 +40,8 @@ void checkeq(string a, string b) {
 	C4(ad);
 	C4(bd);
 #undef C4
+	free(ad);
+	free(bd);
 }
 
 void checkeqr(string a, string b) {
@@ -43,24 +49,26 @@ void checkeqr(string a, string b) {
 	assert(strcmp(a, b) == 0);
 	if (*a) {
 		assert(*b);
-		checkeq(a + 1, b + 1);
-		checklt(a + 1, b);
-		checklt(b + 1, a);
+		checkeqr(a + 1, b + 1);
 	} else {
 		assert(!*b);
+	}
+	for (ulen n=0; n<100; n++) {
+		assert(strncmp(a, b, n) == 0);
+		assert(strneq(a, b, n));
 	}
 }
 
 void checklt(string a, string b) {
 	mutable_string ad = strdup(a);
 	mutable_string bd = strdup(b);
-	// check all pairs
-#define C4(x) checkltr(x,a); checkltr(x,b); checkltr(x,ad); checkltr(x,bd);
-	C4(a);
-	C4(b);
-	C4(ad);
-	C4(bd);
-#undef C4
+	// check appropriate pairs
+	checkltr(a,b);
+	checkltr(a,bd);
+	checkltr(ad,b);
+	checkltr(ad,bd);
+	free(ad);
+	free(bd);
 }
 
 void checkltr(string a, string b) {
@@ -68,7 +76,11 @@ void checkltr(string a, string b) {
 	assert(strcmp(a, b) < 0);
 	if (*a == *b) {
 		assert(*a && *b);
-		checklt(a + 1, b + 1);
+		checkltr(a + 1, b + 1);
+	}
+	for (ulen n=0; n<100; n++) {
+		assert(strncmp(a, b, n) < 0 || (strncmp(a, b, n) == 0 && strcmp(a + n, b + n) < 0));
+		assert(strneq(a, b, n) == (strncmp(a, b, n) == 0));
 	}
 }
 
@@ -89,13 +101,13 @@ CAMAIN0() {
 	checkeq("hello", "hello");
 	// differences in first character
 	checklt("0ello", "hello");
-	checklt("hello", "Hello");
+	checklt("Hello", "hello");
 	// differences in middle character
 	checklt("bbbabb", "bbbbbb");
-	checklt("bbbabb", "bbbAbb");
-	checklt("bbbbbb", "bbbAbb");
-	checklt("bbbabb", "bbbBbb");
-	checklt("bbbbbb", "bbbBbb");
+	checklt("bbbAbb", "bbbabb");
+	checklt("bbbAbb", "bbbbbb");
+	checklt("bbbBbb", "bbbabb");
+	checklt("bbbBbb", "bbbbbb");
 	checklt("bbbAbb", "bbbBbb");
 	// differences in last character
 	checkeq("ahahaA", "ahahaA");

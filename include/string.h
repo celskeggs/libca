@@ -15,7 +15,9 @@ mutable_string strapnd(mutable_string restrict dest, ulen max, string restrict s
 ulen strlen(string str);
 ulen strnlen(string str, ulen max);
 i16 strcmp(string lhs, string rhs);
+i16 strncmp(string lhs, string rhs, ulen max);
 bool streq(string lhs, string rhs);
+bool strneq(string lhs, string rhs, ulen max);
 string strchr(string str, u8 chr);
 string strrchr(string str, u8 chr);
 string strstr(string str, string substr);

@@ -40,11 +40,40 @@ mutable_string strdup(string str) {
 	return out;
 }
 
+i16 strncmp(string lhs, string rhs, ulen max) {
+	string maxl = lhs + max;
+	while (*lhs == *rhs && lhs < maxl) {
+		if (!*lhs) {
+			return 0;
+		}
+		lhs++;
+		rhs++;
+	}
+	return ((i16) *lhs) - ((i16) *rhs);
+}
+
+i16 strcmp(string lhs, string rhs) {
+	while (*lhs == *rhs) {
+		if (!*lhs) {
+			return 0;
+		}
+		lhs++;
+		rhs++;
+	}
+	return ((i16) *lhs) - ((i16) *rhs);
+}
+
+bool strneq(string lhs, string rhs, ulen n) {
+	return strncmp(lhs, rhs, n) == 0;
+}
+
+bool streq(string lhs, string rhs) {
+	return strcmp(lhs, rhs) == 0;
+}
+
 /* TODO
 mutable_string strmov(mutable_string restrict dest, ulen max, string restrict src);
 mutable_string strapnd(mutable_string restrict dest, ulen max, string restrict src);
-i16 strcmp(string lhs, string rhs);
-bool streq(string lhs, string rhs);
 string strchr(string str, u8 chr);
 string strrchr(string str, u8 chr);
 string strstr(string str, string substr);
