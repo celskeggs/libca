@@ -41,4 +41,7 @@ i16 parsei16(string data, string *remain, u8 base);
 i32 parsei32(string data, string *remain, u8 base);
 i64 parsei64(string data, string *remain, u8 base);
 
+u8 showui(mutable_string out, ulen max, u64 number);
+u8 showsi(mutable_string out, ulen max, i64 number);
+
 #endif
