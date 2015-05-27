@@ -18,6 +18,7 @@
 #include <string.h>
 #include <memory.h>
 #include <alloc.h>
+#include <panic.h>
 
 ulen strlen(string str) {
 	ulen out = 0;
@@ -41,8 +42,11 @@ mutable_string strdup(string str) {
 }
 
 i16 strncmp(string lhs, string rhs, ulen max) {
+	if (max == 0) {
+		return 0;
+	}
 	string maxl = lhs + max;
-	while (*lhs == *rhs && lhs < maxl) {
+	while (*lhs == *rhs && lhs < maxl - 1) {
 		if (!*lhs) {
 			return 0;
 		}
@@ -71,8 +75,36 @@ bool streq(string lhs, string rhs) {
 	return strcmp(lhs, rhs) == 0;
 }
 
+mutable_string strmov(mutable_string restrict dest, ulen max, string restrict src) {
+	if (max == 0) {
+		panic_static("strmov passed zero-length buffer");
+	}
+	mutable_string orig = dest;
+	string end = dest + max - 1; // leave an extra space for the ending '\0'
+	while (*src) {
+		if (dest >= end) {
+			panic_static("strmov overflow");
+		}
+		*dest++ = *src++;
+	}
+	*dest = 0;
+	return orig;
+}
+
+mutable_string strmov_t(mutable_string restrict dest, ulen max, string restrict src) {
+	if (max == 0) {
+		return dest; // do nothing!
+	}
+	mutable_string orig = dest;
+	string end = dest + max - 1; // leave an extra space for the ending '\0'
+	while (dest < end && *src) {
+		*dest++ = *src++;
+	}
+	*dest = 0;
+	return orig;
+}
+
 /* TODO
-mutable_string strmov(mutable_string restrict dest, ulen max, string restrict src);
 mutable_string strapnd(mutable_string restrict dest, ulen max, string restrict src);
 string strchr(string str, u8 chr);
 string strrchr(string str, u8 chr);
