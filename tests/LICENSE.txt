@@ -1,5 +1,0 @@
-Everything in this "tests" folder is licensed under the GPL.
-
-See COPYING.GPL in the project root.
-
-Other folders may be licensed under different licenses.
