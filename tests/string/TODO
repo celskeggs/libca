@@ -1,10 +1,8 @@
 string.h:
-	i16 strncmp(string lhs, string rhs, ulen max);
 	mutable_string strapnd(mutable_string restrict dest, ulen max, string restrict src);
 	string strchr(string str, u8 chr);
 	string strrchr(string str, u8 chr);
 	string strstr(string str, string substr);
-	mutable_string strdup(string str);
 
 	typedef struct {
 		ulen count;

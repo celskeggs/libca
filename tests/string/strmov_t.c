@@ -19,10 +19,6 @@
 #include <assert.h>
 #include <string.h>
 
-// temporary:
-#include <stream.h>
-#include <memory.h>
-
 /* Tests for strmov */
 
 // mutable_string strmov(mutable_string restrict dest, ulen max, string restrict src);
