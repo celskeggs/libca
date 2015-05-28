@@ -10,7 +10,7 @@
 
 # Libraries
 *.lib
-*.a
+# *.a - not included because the symlink to libsyscall.a is needed
 *.la
 *.lo
 

@@ -18,8 +18,10 @@ $(RUN_TESTS): test_%: %
 
 ifdef BITS
 
-CMD=gcc $< $(CFLAGS) ../../linux/libca.a -o $@
-%: %.c
+LIBCA=../../linux/libca.a
+
+CMD=gcc $< $(CFLAGS) $(LIBCA) -o $@
+%: %.c $(LIBCA)
 	@$(call echo,3,COMPILING TEST,$<)
 	@echo $(CMD)
 	@$(CMD) || ($(call echo,1,FAILED TO COMPILE,$<) && exit 1)

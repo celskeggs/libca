@@ -13,9 +13,11 @@ CFLAGS=-O2 -m$(BITS) -nostdlib -nostdinc -std=c99 -I../include -I../libsyscall-b
 
 OBJS=begin.o panic.o stream.o string.o alloc.o memory.o file.o dlmalloc-2.8.6/interface.o
 
-libca.a: $(OBJS)
+LIBSYSCALL=../libsyscall-built/libsyscall.a
+
+libca.a: $(OBJS) $(LIBSYSCALL)
 	mkdir libsyscall
-	cd libsyscall && ar x ../../libsyscall-built/libsyscall.a
+	cd libsyscall && ar x ../$(LIBSYSCALL)
 	ar rcs libca.a $(OBJS) libsyscall/*
 	rm -rf libsyscall
 
