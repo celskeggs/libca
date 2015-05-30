@@ -21,6 +21,7 @@
 #include <memory.h>
 #include <alloc.h>
 #include <panic.h>
+#include <assert.h>
 
 ulen strlen(string str) {
 	ulen out = 0;
@@ -145,8 +146,173 @@ mutable_string strapnd_t(mutable_string restrict dest, ulen max, string restrict
 	return orig;
 }
 
+u64 parseu64(string data, string *remain) {
+	if (remain == NULL) {
+		if (*data == 0) {
+			panic_static("parsenum got no number");
+		}
+		if (*data == '-') {
+			panic_static("parsenum got a negative number");
+		}
+		string str;
+		u64 out = parseu64(data, &str);
+		if (str == NULL) {
+			panic_static("parsenum found a too-large number");
+		} else if (*str != '\0') {
+			if (str == data) {
+				panic_static("parsenum did not find a number");
+			} else if (*str >= '0' && *str <= '9') {
+				panic_static("parsenum found a too-long number");
+			} else {
+				panic_static("parsenum found garbage after a number");
+			}
+		}
+		return out;
+	}
+	u64 out = 0;
+	while (*data >= '0' && *data <= '9') {
+		if (__builtin_mul_overflow(out, 10, &out) || __builtin_add_overflow(out, *data - '0', &out)) {
+			*remain = NULL;
+			return out;
+		}
+		data++;
+	}
+	*remain = data;
+	return out;
+}
+u32 parseu32(string data, string *remain) {
+	u64 out = parseu64(data, remain);
+	if (out > U32_MAX) {
+		if (remain == NULL) {
+			panic_static("parsenum found a too-large number");
+		} else {
+			*remain = NULL;
+		}
+	}
+	return out;
+}
+u16 parseu16(string data, string *remain) {
+	u64 out = parseu64(data, remain);
+	if (out > U16_MAX) {
+		if (remain == NULL) {
+			panic_static("parsenum found a too-large number");
+		} else {
+			*remain = NULL;
+		}
+	}
+	return out;
+}
+u8 parseu8(string data, string *remain) {
+	u64 out = parseu64(data, remain);
+	if (out > U8_MAX) {
+		if (remain == NULL) {
+			panic_static("parsenum found a too-large number");
+		} else {
+			*remain = NULL;
+		}
+	}
+	return out;
+}
+
+i64 parsei64(string data, string *remain) {
+	bool isneg = (*data == '-');
+	u64 out = parseu64(isneg ? data + 1 : data, remain);
+	if (out > I64_MAX && !(out == ((u64) I64_MAX) + 1 && isneg)) {
+		if (remain == NULL) {
+			panic_static("parsenum found a too-large number");
+		} else {
+			*remain = NULL;
+			return out;
+		}
+	}
+	return isneg ? -out : out;
+}
+i32 parsei32(string data, string *remain) {
+	bool isneg = (*data == '-');
+	u64 out = parseu64(isneg ? data + 1 : data, remain);
+	if (out > I32_MAX && !(out == ((u32) I32_MAX) + 1 && isneg)) {
+		if (remain == NULL) {
+			panic_static("parsenum found a too-large number");
+		} else {
+			*remain = NULL;
+			return out;
+		}
+	}
+	return isneg ? -out : out;
+}
+i16 parsei16(string data, string *remain) {
+	bool isneg = (*data == '-');
+	u64 out = parseu64(isneg ? data + 1 : data, remain);
+	if (out > I16_MAX && !(out == ((u16) I16_MAX) + 1 && isneg)) {
+		if (remain == NULL) {
+			panic_static("parsenum found a too-large number");
+		} else {
+			*remain = NULL;
+			return out;
+		}
+	}
+	return isneg ? -out : out;
+}
+i8 parsei8(string data, string *remain) {
+	bool isneg = (*data == '-');
+	u64 out = parseu64(isneg ? data + 1 : data, remain);
+	if (out > I8_MAX && !(out == ((u8) I8_MAX) + 1 && isneg)) {
+		if (remain == NULL) {
+			panic_static("parsenum found a too-large number");
+		} else {
+			*remain = NULL;
+			return out;
+		}
+	}
+	return isneg ? -out : out;
+}
+
+static inline u8 numlen(u64 number) { // assumes that number > 0
+	u8 out = 0;
+	while (number > 0) {
+		number /= 10;
+		out++;
+	}
+	return out;
+}
+
+u8 showui(mutable_string out, ulen max, u64 number) {
+	if (max < 2) { // one for null terminator and one for output character
+		panic_static("showint buffer is too short");
+	} else if (number == 0) {
+		*out++ = '0';
+		*out = '\0';
+		return 1;
+	}
+	// TODO: optimize this so that we don't have to do the same divisions twice
+	u8 needed = numlen(number);
+	if (max < needed + 1) {
+		panic_static("showint buffer is too short");
+	}
+	string orig = out;
+	out += needed;
+	*out = '\0';
+	while (number > 0) {
+		*--out = (number % 10) + '0';
+		number /= 10;
+	}
+	assert(out == orig);
+	return needed;
+}
+
+u8 showsi(mutable_string out, ulen max, i64 number) {
+	if (max < 2) { // one for null terminator and one for output character
+		panic_static("showint buffer is too short");
+	}
+	if (number < 0) {
+		*out = '-';
+		return showui(out + 1, max - 1, -number) + 1;
+	} else {
+		return showui(out, max, number);
+	}
+}
+
 /* TODO
-mutable_string strapnd(mutable_string restrict dest, ulen max, string restrict src);
 string strchr(string str, u8 chr);
 string strrchr(string str, u8 chr);
 string strstr(string str, string substr);
@@ -159,15 +325,4 @@ strsplit_out *strsplit(string str, string delimiter, bool compress);
 void strsplit_free(strsplit_out *struc);
 
 // if remain is NULL, then will panic if invalid. otherwise, will be set to point to the first unconsumed character.
-u8 parseu8(string data, string *remain, u8 base);
-u16 parseu16(string data, string *remain, u8 base);
-u32 parseu32(string data, string *remain, u8 base);
-u64 parseu64(string data, string *remain, u8 base);
-i8 parsei8(string data, string *remain, u8 base);
-i16 parsei16(string data, string *remain, u8 base);
-i32 parsei32(string data, string *remain, u8 base);
-i64 parsei64(string data, string *remain, u8 base);
-
-u8 showui(mutable_string out, ulen max, u64 number);
-u8 showsi(mutable_string out, ulen max, i64 number);
 */

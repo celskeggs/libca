@@ -21,10 +21,6 @@
 #include <assert.h>
 #include <string.h>
 
-// temporary
-#include <stream.h>
-#include <memory.h>
-
 /* Tests for strapnd */
 
 // mutable_string strapnd(mutable_string restrict dest, ulen max, string restrict src);

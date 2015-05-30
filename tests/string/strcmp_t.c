@@ -22,9 +22,6 @@
 #include <string.h>
 #include <alloc.h>
 
-// temporary
-#include <stream.h>
-
 /* Tests for strcmp, streq */
 
 void checkeq(string a, string b);

@@ -38,6 +38,21 @@
 
 #define NULL ((void*) 0)
 
+#define U8_MAX __UINT8_MAX__
+#define U16_MAX __UINT16_MAX__
+#define U32_MAX __UINT32_MAX__
+#define U64_MAX __UINT64_MAX__
+
+#define I8_MIN (~__INT8_MAX__)
+#define I16_MIN (~__INT16_MAX__)
+#define I32_MIN (~__INT32_MAX__)
+#define I64_MIN (~__INT64_MAX__)
+
+#define I8_MAX __INT8_MAX__
+#define I16_MAX __INT16_MAX__
+#define I32_MAX __INT32_MAX__
+#define I64_MAX __INT64_MAX__
+
 #if !defined(__INT8_TYPE__) || !defined(__INT16_TYPE__) || !defined(__INT32_TYPE__) || !defined(__INT64_TYPE__)
 # error Required types were not defined! Maybe this only works on gcc?
 #endif

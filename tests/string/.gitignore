@@ -3,3 +3,4 @@ strlen_t
 strmov_t
 strdup_t
 strapnd_t
+intconv_t

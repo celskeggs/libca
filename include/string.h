@@ -47,14 +47,14 @@ strsplit_out *strsplit(string str, string delimiter, bool compress);
 void strsplit_free(strsplit_out *struc);
 
 // if remain is NULL, then will panic if invalid. otherwise, will be set to point to the first unconsumed character.
-u8 parseu8(string data, string *remain, u8 base);
-u16 parseu16(string data, string *remain, u8 base);
-u32 parseu32(string data, string *remain, u8 base);
-u64 parseu64(string data, string *remain, u8 base);
-i8 parsei8(string data, string *remain, u8 base);
-i16 parsei16(string data, string *remain, u8 base);
-i32 parsei32(string data, string *remain, u8 base);
-i64 parsei64(string data, string *remain, u8 base);
+u8 parseu8(string data, string *remain);
+u16 parseu16(string data, string *remain);
+u32 parseu32(string data, string *remain);
+u64 parseu64(string data, string *remain);
+i8 parsei8(string data, string *remain);
+i16 parsei16(string data, string *remain);
+i32 parsei32(string data, string *remain);
+i64 parsei64(string data, string *remain);
 
 u8 showui(mutable_string out, ulen max, u64 number);
 u8 showsi(mutable_string out, ulen max, i64 number);
