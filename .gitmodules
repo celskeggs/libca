@@ -1,0 +1,3 @@
+[submodule "libsyscall"]
+	path = libsyscall
+	url = https://github.com/col6y/libsyscall

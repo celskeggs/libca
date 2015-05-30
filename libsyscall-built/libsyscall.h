@@ -1,1 +1,1 @@
-../../libsyscall/linux/libsyscall.h
+../libsyscall/linux/libsyscall.h

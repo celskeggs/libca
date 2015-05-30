@@ -5,3 +5,6 @@ sudo: true
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq python3
+
+install:
+  - cd libsyscall && ./configure && make

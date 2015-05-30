@@ -33,3 +33,5 @@
 
 # Others
 build
+config.mk
+config.status
