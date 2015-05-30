@@ -1,6 +1,6 @@
 set -e
 make clean
-make
+make -j4
 cd ../tests
 make clean
-make
+make -j4

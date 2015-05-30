@@ -9,7 +9,7 @@ endif
 endif
 
 ifdef BITS
-CFLAGS=-O2 -m$(BITS) -nostdlib -nostdinc -std=c99 -I../include -I../libsyscall-built -fno-builtin -Wall
+CFLAGS=-O2 -m$(BITS) -nostdlib -nostdinc -std=c99 -I../include -I../libsyscall-built -fno-builtin -Wall -ggdb
 
 OBJS=begin.o panic.o stream.o string.o alloc.o memory.o file.o dlmalloc-2.8.6/interface.o
 

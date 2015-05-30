@@ -20,7 +20,7 @@ all: $(DIRS)
 
 $(DIRS): %:
 	@$(call echo,3,ATTEMPTING SUITE,$(@:/=))
-	@(cd $@ && make BITS=$(BITS)) || ($(call echo,1,FAILED SUITE,$(@:/=)) && exit 1)
+	+@(cd $@ && make BITS=$(BITS)) || ($(call echo,1,FAILED SUITE,$(@:/=)) && exit 1)
 	@$(call echo,2,PASSED SUITE,$(@:/=))
 
 else

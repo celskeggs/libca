@@ -1,4 +1,4 @@
-CFLAGS=-O2 -m$(BITS) -nostdlib -nostdinc -ffreestanding -I../../include -std=c99 -Wall
+CFLAGS=-O2 -m$(BITS) -nostdlib -nostdinc -ffreestanding -I../../include -std=c99 -Wall -ggdb
 
 TESTS_C=$(shell echo *_t.c)
 # TESTS=$(shell echo *_t) $(TESTS_C:.c=)
