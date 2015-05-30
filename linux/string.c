@@ -106,6 +106,45 @@ mutable_string strmov_t(mutable_string restrict dest, ulen max, string restrict 
 	return orig;
 }
 
+mutable_string strapnd(mutable_string restrict dest, ulen max, string restrict src) {
+	if (max == 0) {
+		panic_static("strapnd passed zero-length buffer");
+	}
+	mutable_string orig = dest;
+	string end = dest + max;
+	while (dest < end && *dest) {
+		dest++;
+	}
+	if (dest >= end) {
+		panic_static("strapnd passed overflowed buffer");
+	} else { // dest points to the terminator
+		end--; // leave a space for the ending '\0'
+		while (*src) {
+			if (dest >= end) {
+				panic_static("strapnd overflow");
+			}
+			*dest++ = *src++;
+		}
+		*dest = 0;
+	}
+	return orig;
+}
+
+mutable_string strapnd_t(mutable_string restrict dest, ulen max, string restrict src) {
+	if (max == 0) {
+		return dest; // do nothing!
+	}
+	mutable_string orig = dest;
+	string end = dest + max;
+	while (dest < end && *dest) {
+		dest++;
+	}
+	if (dest < end) {
+		strmov_t(dest, end - dest, src);
+	}
+	return orig;
+}
+
 /* TODO
 mutable_string strapnd(mutable_string restrict dest, ulen max, string restrict src);
 string strchr(string str, u8 chr);

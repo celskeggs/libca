@@ -1,3 +1,4 @@
 strcmp_t
 strlen_t
 strmov_t
+strapnd_t

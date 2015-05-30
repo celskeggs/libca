@@ -25,7 +25,9 @@
 // max includes the null terminator.
 mutable_string strmov(mutable_string restrict dest, ulen max, string restrict src); // panic on overflow
 mutable_string strmov_t(mutable_string restrict dest, ulen max, string restrict src); // truncate on overflow
-mutable_string strapnd(mutable_string restrict dest, ulen max, string restrict src);
+mutable_string strapnd(mutable_string restrict dest, ulen max, string restrict src); // panic on overflow
+mutable_string strapnd_t(mutable_string restrict dest, ulen max, string restrict src); // truncate on overflow
+
 ulen strlen(string str);
 ulen strnlen(string str, ulen max);
 i16 strcmp(string lhs, string rhs);
