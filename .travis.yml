@@ -7,4 +7,7 @@ before_install:
   - sudo apt-get install -qq python3
 
 install:
-  - cd libsyscall && ./configure && make
+  - cd libsyscall
+  - ./configure
+  - make
+  - cd ..
