@@ -3,7 +3,7 @@ language: c
 sudo: true
 
 before_install:
-  - sudo add-apt-repository ppa:nicola-onorata/toolchain
+  - sudo add-apt-repository ppa:nicola-onorata/toolchain -y
   - sudo apt-get update -qq
   - sudo apt-get install -qq python3 gcc-5
 
