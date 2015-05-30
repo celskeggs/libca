@@ -1,39 +1,32 @@
-CFLAGS=-O2 -m$(BITS) -nostdlib -nostdinc -ffreestanding -I../../include -std=c99 -Wall -ggdb
+include ../../common.mk # relative to location of symlinks
+
+TESTBUILDDIR=$(BUILDDIR)/tests/$(TESTSUITE)
+
+# assumption is that we are in a test directory
 
 TESTS_C=$(shell echo *_t.c)
-# TESTS=$(shell echo *_t) $(TESTS_C:.c=)
-TESTS=$(TESTS_C:.c=)
-RUN_TESTS=$(addprefix test_, $(TESTS))
-
-echo=echo -e "\e[1;3$(1)m[$(2)] $(3)\e[0m"
+RAW_TESTS=$(TESTS_C:.c=)
+TESTS=$(addprefix $(TESTBUILDDIR)/, $(RAW_TESTS))
+RUN_TESTS=$(addprefix test_, $(RAW_TESTS))
 
 .PHONY: $(RUN_TESTS)
 
-tests: ${RUN_TESTS}
+tests: $(RUN_TESTS)
 
-$(RUN_TESTS): test_%: %
+$(RUN_TESTS): test_%: $(TESTBUILDDIR)/%
 	@$(call echo,3,RUNNING TEST,$<)
-	@./$< || ($(call echo,1,FAILED,$<) && exit 1)
+	@$< || ($(call echo,1,FAILED,$<) && exit 1)
 	@$(call echo,2,PASSED,$<)
 
-ifdef BITS
+LIBCA=$(BUILDDIR)/libca.a
 
-LIBCA=../../linux/libca.a
-
-CMD=gcc $< $(CFLAGS) $(LIBCA) -o $@
-%: %.c $(LIBCA)
+CMD=$(CC) $< $(ALL_CFLAGS) $(LIBCA) -o $@
+$(TESTBUILDDIR)/%: %.c $(LIBCA)
+	@mkdir -p $(TESTBUILDDIR)
 	@$(call echo,3,COMPILING TEST,$<)
 	@echo $(CMD)
 	@$(CMD) || ($(call echo,1,FAILED TO COMPILE,$<) && exit 1)
 	@$(call echo,2,COMPILED,$<)
-
-else
-
-%: %.c
-	@echo 'BITS must be set!'
-	@exit 1
-
-endif
 
 clean:
 	rm -f $(TESTS)

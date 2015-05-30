@@ -1,36 +1,22 @@
-ifndef BITS
-ARCH=$(shell uname -m)
-ifeq ($(ARCH),x86_64)
-BITS=64
-endif
-ifeq ($(ARCH),i686)
-BITS=32
-endif
-endif
+include ../common.mk
+# assumption: we are in $(PSRCDIR)
 
-ifdef BITS
-CFLAGS=-O2 -m$(BITS) -nostdlib -nostdinc -std=c99 -I../include -I../libsyscall-built -fno-builtin -Wall -ggdb
+ALL_CFLAGS += -I$(SRCDIR)/libsyscall-built
 
-OBJS=begin.o panic.o stream.o string.o alloc.o memory.o file.o dlmalloc-2.8.6/interface.o
+OBJS=$(addprefix $(BUILDDIR)/,begin.o panic.o stream.o string.o alloc.o memory.o file.o dlmalloc-2.8.6/interface.o)
 
-LIBSYSCALL=../libsyscall-built/libsyscall.a
+LIBSYSCALL=$(SRCDIR)/libsyscall-built/libsyscall.a
 
-libca.a: $(OBJS) $(LIBSYSCALL)
+$(BUILDDIR)/libca.a: $(OBJS) $(LIBSYSCALL)
 	mkdir libsyscall
-	cd libsyscall && ar x ../$(LIBSYSCALL)
-	ar rcs libca.a $(OBJS) libsyscall/*
+	cd libsyscall && ar x $(LIBSYSCALL)
+	ar rcs $(BUILDDIR)/libca.a $(OBJS) libsyscall/*
 	rm -rf libsyscall
 
-%.o: %.c ../include/*.h
-	gcc $(CFLAGS) $< -o $@ -c
+$(BUILDDIR)/%.o: %.c $(INCDIR)/*.h
+	mkdir -p $(dir $@)
+	$(CC) $(ALL_CFLAGS) $< -o $@ -c
 
-else
-
-main:
-	@echo 'BITS must be set!'
-	@exit 1
-
-endif
 clean:
-	rm -f $(OBJS) libca.a
+	rm -f $(OBJS) $(BUILDDIR)/libca.a
 	rm -rf libsyscall
