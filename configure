@@ -92,6 +92,8 @@ if "builddir" not in km:
 	km["builddir"] = os.path.join(km["srcdir"], "build")
 	if not os.path.exists(km["builddir"]):
 		os.mkdir(km["builddir"])
+if "cc" not in km:
+	km["cc"] = os.getenv("CC") or "gcc"
 
 with open("config.status", "w") as f:
 	configmk = ("config.mk")

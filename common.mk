@@ -1,7 +1,6 @@
 TOP := $(dir $(lastword $(MAKEFILE_LIST)))
 include $(TOP)/config.mk
 
-CC=gcc
 CFLAGS=-O2 -ggdb -Wall
 ALL_CFLAGS=-m$(BITS) -nostdlib -nostdinc -std=c99 -I$(INCDIR) -I$(SRCDIR)/libsyscall-built -fno-builtin $(CFLAGS)
 
