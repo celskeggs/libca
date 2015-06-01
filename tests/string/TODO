@@ -1,8 +1,4 @@
 string.h:
-	string strchr(string str, u8 chr);
-	string strrchr(string str, u8 chr);
-	string strstr(string str, string substr);
-
 	typedef struct {
 		ulen count;
 		string *strings;

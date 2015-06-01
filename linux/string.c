@@ -312,17 +312,48 @@ u8 showsi(mutable_string out, ulen max, i64 number) {
 	}
 }
 
-/* TODO
-string strchr(string str, u8 chr);
-string strrchr(string str, u8 chr);
-string strstr(string str, string substr);
+string strchr(string str, u8 chr) {
+	while (*str && *str != chr) {
+		str++;
+	}
+	return *str || chr == 0 ? str : NULL;
+}
+string strrchr(string str, u8 chr) {
+	if (chr == 0) {
+		while (*str) {
+			str++;
+		}
+		return str;
+	}
+	string out = NULL;
+	while (*str) {
+		if (*str == chr) {
+			out = str;
+		}
+		str++;
+	}
+	return out;
+}
+string strstr(string str, string substr) {
+	char first = *substr;
+	if (first == 0) {
+		return str;
+	}
+	ulen count = strlen(substr);
+	while (*str) {
+		if (*str == first && strneq(str + 1, substr + 1, count - 1)) {
+			return str;
+		}
+		str++;
+	}
+	return NULL;
+}
 
+/* TODO
 typedef struct {
 	ulen count;
 	string *strings;
 } strsplit_out;
 strsplit_out *strsplit(string str, string delimiter, bool compress);
 void strsplit_free(strsplit_out *struc);
-
-// if remain is NULL, then will panic if invalid. otherwise, will be set to point to the first unconsumed character.
 */
