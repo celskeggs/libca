@@ -51,7 +51,7 @@ mutable_string strndup(string str, ulen n) {
 }
 
 i16 strncmp(string lhs, string rhs, ulen max) {
-	if (max == 0) {
+	if (lhs == rhs || max == 0) {
 		return 0;
 	}
 	string maxl = lhs + max;
@@ -66,6 +66,9 @@ i16 strncmp(string lhs, string rhs, ulen max) {
 }
 
 i16 strcmp(string lhs, string rhs) {
+	if (lhs == rhs) {
+		return 0;
+	}
 	while (*lhs == *rhs) {
 		if (!*lhs) {
 			return 0;

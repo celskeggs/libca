@@ -22,7 +22,7 @@
 #include <string.h>
 #include <alloc.h>
 
-/* Tests for strcmp, streq */
+/* Tests for strcmp, streq, strncmp, strneq */
 
 void checkeq(string a, string b);
 void checkeqr(string a, string b);
