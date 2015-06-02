@@ -43,6 +43,12 @@ mutable_string strdup(string str) {
 	memcpy(out, str, count);
 	return out;
 }
+mutable_string strndup(string str, ulen n) {
+	mutable_string out = (mutable_string) malloc(n + 1);
+	memcpy(out, str, n);
+	out[n] = '\0';
+	return out;
+}
 
 i16 strncmp(string lhs, string rhs, ulen max) {
 	if (max == 0) {
@@ -349,11 +355,54 @@ string strstr(string str, string substr) {
 	return NULL;
 }
 
-/* TODO
-typedef struct {
-	ulen count;
-	string *strings;
-} strsplit_out;
-strsplit_out *strsplit(string str, string delimiter, bool compress);
-void strsplit_free(strsplit_out *struc);
-*/
+strsplit_out *strsplit(string str, string delimiter, bool compress) {
+	if (*delimiter == '\0') {
+		panic_static("strsplit passed empty delimiter");
+	}
+
+	ulen count = 0;
+	string itr = str;
+	while (true) {
+		string nitr = strstr(itr, delimiter);
+		if (nitr == NULL) {
+			if (!(compress && *itr == 0)) {
+				count++;
+			}
+			break;
+		}
+		if (!(compress && nitr == itr)) {
+			count++;
+		}
+		itr = nitr + strlen(delimiter);
+	}
+
+	strsplit_out *out = malloc(sizeof(strsplit_out) + sizeof(string) * count);
+	out->count = count;
+	out->strings = (string *) (out + 1);
+
+	itr = str;
+	ulen i = 0;
+	while (true) {
+		string nitr = strstr(itr, delimiter);
+		if (nitr == NULL) {
+			if (!(compress && *itr == 0)) {
+				out->strings[i++] = strdup(itr);
+			}
+			break;
+		}
+		if (!(compress && nitr == itr)) {
+			out->strings[i++] = strndup(itr, nitr - itr);
+		}
+		itr = nitr + strlen(delimiter);
+	}
+	assert(i == count);
+
+	return out;
+}
+
+void strsplit_free(strsplit_out *struc) {
+	for (ulen i = 0; i < struc->count; i++) {
+		free((mutable_string) struc->strings[i]); // we assume that this was allocated by strsplit, so this should be safe.
+	}
+	free(struc);
+}

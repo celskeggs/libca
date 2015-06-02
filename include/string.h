@@ -37,7 +37,9 @@ bool strneq(string lhs, string rhs, ulen max);
 string strchr(string str, u8 chr);
 string strrchr(string str, u8 chr);
 string strstr(string str, string substr);
+
 mutable_string strdup(string str);
+mutable_string strndup(string str, ulen count);
 
 typedef struct {
 	ulen count;

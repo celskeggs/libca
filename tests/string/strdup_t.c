@@ -23,11 +23,20 @@
 #include <assert.h>
 #include <system.h>
 
+/* tests strdup and strndup */
+
 void check(string str) {
 	mutable_string mut = strdup(str);
 	assert(streq(mut, str));
 	assert(mut != str);
 	free(mut);
+	for (ulen n = 0; n < strlen(str) && n < 10000; n++) {
+		mut = strndup(str, n);
+		assert(strneq(mut, str, n));
+		assert(strlen(mut) == n);
+		assert(mut != str);
+		free(mut);
+	}
 }
 
 CAMAIN0() {

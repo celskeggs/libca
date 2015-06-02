@@ -1,7 +1,0 @@
-string.h:
-	typedef struct {
-		ulen count;
-		string *strings;
-	} strsplit_out;
-	strsplit_out *strsplit(string str, string delimiter, bool compress);
-	void strsplit_free(strsplit_out *struc);
