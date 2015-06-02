@@ -91,16 +91,6 @@ file.h:
 	ioerr renamef(string from, string to);
 	void renamefq(string from, string to); // panics on error
 
-memory.h:
-	void *memset(void *buf, u8 chr, ulen count);
-	void *memset_c(void *dest, ulen max, u8 chr, ulen count);
-	void *memcpy(void *restrict dst, const void *restrict src, ulen count);
-	void *memcpy_c(void *restrict dst, ulen max, const void *restrict src, ulen count);
-	void *memmove(void *restrict dst, const void *restrict src, ulen count);
-	void *memmove_c(void *restrict dst, ulen max, const void *restrict src, ulen count);
-	void *memcmp(const void *lhs, const void *rhs, ulen count);
-	void *memchr(const void *ptr, u8 chr, ulen count);
-
 panic.h:
 	bool recover(recover_callback cb, void *param, error *err_ret);
 	void panic(string str) __attribute__((noreturn));
@@ -196,4 +186,3 @@ system.h:
 	#define CAMAIN0() u8 camain(u32 __c, string *__a)
 	
 	extern struct _force_undef_type {} main(void); // main should not be defined in a libca program.
-
