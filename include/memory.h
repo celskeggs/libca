@@ -29,7 +29,8 @@ void *memcpy(void *restrict dst, const void *restrict src, ulen count);
 void *memcpy_c(void *restrict dst, ulen max, const void *restrict src, ulen count);
 void *memmove(void *restrict dst, const void *restrict src, ulen count);
 void *memmove_c(void *restrict dst, ulen max, const void *restrict src, ulen count);
-void *memcmp(const void *lhs, const void *rhs, ulen count);
+i16 memcmp(const void *lhs, const void *rhs, ulen count);
+bool memeq(const void *lhs, const void *rhs, ulen count);
 void *memchr(const void *ptr, u8 chr, ulen count);
 
 #endif
