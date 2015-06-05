@@ -34,6 +34,20 @@ void *memcpy(void *restrict dst, const void *restrict src, ulen count) {
 	}
 	return u8d;
 }
+i16 memcmp(const void *lhs, const void *rhs, ulen count) {
+	const u8 *lh8 = (const u8 *) lhs, *rh8 = (const u8 *) rhs;
+	while (count--) {
+		if (*lh8 != *rh8) {
+			return *lh8 - *rh8;
+		}
+		lh8++;
+		rh8++;
+	}
+	return 0;
+}
+bool memeq(const void *lhs, const void *rhs, ulen count) {
+	return memcmp(lhs, rhs, count) == 0;
+}
 
 /* TODO
 // _c functions are check functions: they panic if constraints (like non-NULLity) aren't met. Also make sure that no more than the maximum amount is modified - also panic-ing.
@@ -41,7 +55,5 @@ void *memset_c(void *dest, ulen max, u8 chr, ulen count);
 void *memcpy_c(void *restrict dst, ulen max, const void *restrict src, ulen count);
 void *memmove(void *restrict dst, const void *restrict src, ulen count);
 void *memmove_c(void *restrict dst, ulen max, const void *restrict src, ulen count);
-i16 memcmp(const void *lhs, const void *rhs, ulen count);
-bool memeq(const void *lhs, const void *rhs, ulen count);
 void *memchr(const void *ptr, u8 chr, ulen count);
 */
