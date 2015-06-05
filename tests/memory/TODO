@@ -3,4 +3,3 @@ memory.h:
 	void *memcpy_c(void *restrict dst, ulen max, const void *restrict src, ulen count);
 	void *memmove(void *restrict dst, const void *restrict src, ulen count);
 	void *memmove_c(void *restrict dst, ulen max, const void *restrict src, ulen count);
-	void *memchr(const void *ptr, u8 chr, ulen count);

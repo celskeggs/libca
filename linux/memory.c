@@ -61,10 +61,18 @@ bool memeq(const void *lhs, const void *rhs, ulen count) {
 	return memcmp(lhs, rhs, count) == 0;
 }
 
+const void *memchr(const void *ptrr, u8 chr, ulen count) {
+	const u8 *ptr = (const u8*) ptrr;
+	const u8 *max = ptr + count;
+	while (ptr < max && *ptr != chr) {
+		ptr++;
+	}
+	return ptr == max ? NULL : ptr;
+}
+
 /* TODO
 // _c functions are check functions: they panic if constraints (like non-NULLity) aren't met. Also make sure that no more than the maximum amount is modified - also panic-ing.
 void *memcpy_c(void *restrict dst, ulen max, const void *restrict src, ulen count);
 void *memmove(void *restrict dst, const void *restrict src, ulen count);
 void *memmove_c(void *restrict dst, ulen max, const void *restrict src, ulen count);
-void *memchr(const void *ptr, u8 chr, ulen count);
 */
