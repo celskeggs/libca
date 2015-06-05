@@ -18,6 +18,7 @@
 */
 
 #include <memory.h>
+#include <panic.h>
 
 void *memset(void *buf, u8 chr, ulen count) {
 	u8 *u8b = (u8*) buf;
@@ -26,6 +27,16 @@ void *memset(void *buf, u8 chr, ulen count) {
 	}
 	return buf;
 }
+void *memset_c(void *dest, ulen max, u8 chr, ulen count) {
+	if (dest == NULL) {
+		panic_static("memset_c destination pointer is NULL");
+	}
+	if (count > max) {
+		panic_static("memset_c caught overflow");
+	}
+	return memset(dest, chr, count);
+}
+
 void *memcpy(void *restrict dst, const void *restrict src, ulen count) {
 	const u8 *u8s = (const u8*) src;
 	u8 *u8d = (u8*) dst;
@@ -34,6 +45,7 @@ void *memcpy(void *restrict dst, const void *restrict src, ulen count) {
 	}
 	return u8d;
 }
+
 i16 memcmp(const void *lhs, const void *rhs, ulen count) {
 	const u8 *lh8 = (const u8 *) lhs, *rh8 = (const u8 *) rhs;
 	while (count--) {
@@ -51,7 +63,6 @@ bool memeq(const void *lhs, const void *rhs, ulen count) {
 
 /* TODO
 // _c functions are check functions: they panic if constraints (like non-NULLity) aren't met. Also make sure that no more than the maximum amount is modified - also panic-ing.
-void *memset_c(void *dest, ulen max, u8 chr, ulen count);
 void *memcpy_c(void *restrict dst, ulen max, const void *restrict src, ulen count);
 void *memmove(void *restrict dst, const void *restrict src, ulen count);
 void *memmove_c(void *restrict dst, ulen max, const void *restrict src, ulen count);
