@@ -1,5 +1,3 @@
 memory.h:
-	void *memcpy(void *restrict dst, const void *restrict src, ulen count);
-	void *memcpy_c(void *restrict dst, ulen max, const void *restrict src, ulen count);
 	void *memmove(void *restrict dst, const void *restrict src, ulen count);
 	void *memmove_c(void *restrict dst, ulen max, const void *restrict src, ulen count);

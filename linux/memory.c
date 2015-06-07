@@ -45,6 +45,18 @@ void *memcpy(void *restrict dst, const void *restrict src, ulen count) {
 	}
 	return u8d;
 }
+void *memcpy_c(void *restrict dst, ulen bufsize, const void *restrict src, ulen count) {
+	if (dst == NULL) {
+		panic_static("memcpy_c destination pointer is NULL");
+	}
+	if (src == NULL) {
+		panic_static("memcpy_c source pointer is NULL");
+	}
+	if (count > bufsize) {
+		panic_static("memcpy_c caught overflow");
+	}
+	return memcpy(dst, src, count);
+}
 
 i16 memcmp(const void *lhs, const void *rhs, ulen count) {
 	const u8 *lh8 = (const u8 *) lhs, *rh8 = (const u8 *) rhs;
