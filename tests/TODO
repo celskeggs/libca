@@ -62,12 +62,6 @@ catype.h:
 	string
 	mutable_string
 
-caversion.h:
-	LIBCA_MAJOR
-	LIBCA_MINOR
-	LIBCA_PATCH
-	LIBCA_VERSION
-
 clock.h:
 	struct clock_result get_clock(enum clock_type type);
 	void normalize_clock_struct(struct clock_struct *cstr);

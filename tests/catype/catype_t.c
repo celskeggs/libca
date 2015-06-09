@@ -17,9 +17,6 @@
     along with libca.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifdef NDEBUG
-# error Asserts are required!
-#endif
 #include <assert.h>
 #include <stream.h>
 #include <system.h>
