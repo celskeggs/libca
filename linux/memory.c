@@ -61,6 +61,34 @@ void *memcpy_c(void *restrict dst, ulen bufsize, const void *restrict src, ulen 
 	return memcpy(dst, src, count);
 }
 
+void *memmove(void *dst, const void *src, ulen count) { // similar to memcpy, but can handle overlapping ranges.
+	const u8 *u8s = (const u8*) src;
+	u8 *u8d = (u8*) dst;
+	if (src < dst) { // we need to go in reverse to avoid the possibility of clobbering our source data.
+		for (ulen i = count; i > 0;) {
+			--i;
+			u8d[i] = u8s[i];
+		}
+	} else {
+		for (ulen i = 0; i < count; i++) {
+			u8d[i] = u8s[i];
+		}
+	}
+	return u8d;
+}
+void *memmove_c(void *dst, ulen bufsize, const void *src, ulen count) {
+	if (dst == NULL) {
+		panic_static("memmove_c destination pointer is NULL");
+	}
+	if (src == NULL) {
+		panic_static("memmove_c source pointer is NULL");
+	}
+	if (count > bufsize) {
+		panic_static("memmove_c caught overflow");
+	}
+	return memmove(dst, src, count);
+}
+
 i16 memcmp(const void *lhs, const void *rhs, ulen count) {
 	const u8 *lh8 = (const u8 *) lhs, *rh8 = (const u8 *) rhs;
 	while (count--) {
@@ -84,10 +112,3 @@ const void *memchr(const void *ptrr, u8 chr, ulen count) {
 	}
 	return ptr == max ? NULL : ptr;
 }
-
-/* TODO
-// _c functions are check functions: they panic if constraints (like non-NULLity) aren't met. Also make sure that no more than the maximum amount is modified - also panic-ing.
-void *memcpy_c(void *restrict dst, ulen max, const void *restrict src, ulen count);
-void *memmove(void *restrict dst, const void *restrict src, ulen count);
-void *memmove_c(void *restrict dst, ulen max, const void *restrict src, ulen count);
-*/
