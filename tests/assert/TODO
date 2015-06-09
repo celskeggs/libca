@@ -1,0 +1,3 @@
+assert.h:
+	assert with NDEBUG
+	assert without NDEBUG

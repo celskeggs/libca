@@ -26,7 +26,7 @@
 #define EXIT_FAILURE 1
 
 // actually uses panic - see panic.h
-void exit(u8 code);
+void exit(u8 code) __attribute__((noreturn));
 
 u32 system(string command); // with sh -c
 u32 system_nosh(string command, string *args, ulen count); // raw

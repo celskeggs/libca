@@ -41,6 +41,5 @@ typedef void (*recover_callback)(void *);
 bool recover(recover_callback cb, void *param, error *err_ret);
 void panic(string str) __attribute__((noreturn));
 void panic_static(string str) __attribute__((noreturn));
-void exit(u8 code) __attribute__((noreturn)); // also defined in lifecycle.h
 
 #endif

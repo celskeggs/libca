@@ -50,10 +50,6 @@ ascii.h:
 	int tolower(int x);
 	int toupper(int x);
 
-assert.h:
-	assert with NDEBUG
-	assert without NDEBUG
-
 catype.h:
 	bool, true, false
 	offsetof
@@ -84,12 +80,6 @@ file.h:
 	void removefq(string filename); // panics on error
 	ioerr renamef(string from, string to);
 	void renamefq(string from, string to); // panics on error
-
-panic.h:
-	bool recover(recover_callback cb, void *param, error *err_ret);
-	void panic(string str) __attribute__((noreturn));
-	void panic_static(string str) __attribute__((noreturn));
-	void exit(u8 code) __attribute__((noreturn)); // also defined in lifecycle.h
 
 random.h:
 	u32 random();
@@ -157,6 +147,7 @@ stream.h:
 	extern stream stdin, stdout, stderr;
 
 system.h:
+	void exit(u8 code) __attribute__((noreturn));
 	u32 system(string command); // with sh -c
 	u32 system_nosh(string command, string *args, ulen count); // raw
 	bool system_check(string command);
