@@ -86,12 +86,14 @@ CAMAIN0() {
 	assert(recover(cb, &p, &err));
 	assert(test[0] == 9 && test[1] == 9);
 
-	u8 data[256 + 16]; // needs to be at least max(n) + 16
+	u8 data[200 + 16]; // needs to be at least max(n) + 16
 	for (u8 i = 0; i < 255; i++) {
-		for (ulen n = 0; n < 256; n++) {
+		for (ulen n = 0; n < 200; n++) {
 			check(data, i, n);
-			check(data, 255, n);
 		}
+	}
+	for (ulen n = 0; n < 200; n++) {
+		check(data, 255, n);
 	}
 	return 0;
 }

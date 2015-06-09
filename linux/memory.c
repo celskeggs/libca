@@ -55,6 +55,9 @@ void *memcpy_c(void *restrict dst, ulen bufsize, const void *restrict src, ulen 
 	if (count > bufsize) {
 		panic_static("memcpy_c caught overflow");
 	}
+	if (dst + bufsize > src && dst < src + count) {
+		panic_static("memcpy_c attempted to use overlapping regions");
+	}
 	return memcpy(dst, src, count);
 }
 
