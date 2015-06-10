@@ -44,6 +44,9 @@ string *get_arguments(void) {
 string get_program_reference(void) {
 	return program_reference;
 }
+string *get_environment(void) {
+	return environment;
+}
 
 typedef void (*init_func)(void);
 
@@ -53,6 +56,10 @@ extern init_func __init_array_end;
 extern void _init_alloc(void);
 
 LSC_MAIN(argc, argv, env) {
+	_init_alloc();
+	for (init_func *elem = &__init_array_start; elem < &__init_array_end; elem++) {
+		(*elem)();
+	}
 	if (argc < 1 || (argc & 0xFFFFFFFF) != argc) {
 		panic_static("LSC_MAIN: invalid argc state on program entrance");
 	}
@@ -60,9 +67,5 @@ LSC_MAIN(argc, argv, env) {
 	program_reference = argv[0];
 	arguments = ((string*) argv) + 1;
 	environment = (string*) env;
-	_init_alloc();
-	for (init_func *elem = &__init_array_start; elem < &__init_array_end; elem++) {
-		(*elem)();
-	}
 	return camain(argument_count, arguments);
 }

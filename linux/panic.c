@@ -30,11 +30,11 @@ void exit(u8 code) {
 }
 
 void panic_static(string str) {
-	_panic_do((error) {ERR_STATIC, 127, str});
+	_panic_do((error) {ERR_STATIC, 142, str});
 }
 
 void panic(string str) {
-	_panic_do((error) {ERR_MALLOCED, 127, strdup(str)});
+	_panic_do((error) {ERR_MALLOCED, 142, strdup(str)});
 }
 
 // TODO: make this thread-local
