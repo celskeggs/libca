@@ -1,6 +1,7 @@
 include ../common.mk
 
-DIRS=$(shell echo */)
+MAKEFILES=$(shell echo */Makefile)
+DIRS=$(foreach makefile,$(MAKEFILES),$(shell dirname $(makefile)) )
 CLEAN_DIRS=$(addprefix clean_,$(DIRS))
 
 all: $(DIRS)
