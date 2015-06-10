@@ -3,7 +3,9 @@ include ../common.mk
 
 ALL_CFLAGS += -I$(SRCDIR)/libsyscall-built
 
-OBJS=$(addprefix $(BUILDDIR)/,begin.o panic.o stream.o string.o alloc.o memory.o file.o dlmalloc-2.8.6/interface.o)
+SRCS=$(shell echo *.c)
+
+OBJS=$(addprefix $(BUILDDIR)/,$(SRCS:.c=.o) dlmalloc-2.8.6/interface.o)
 
 LIBSYSCALL=$(SRCDIR)/libsyscall-built/libsyscall.a
 
