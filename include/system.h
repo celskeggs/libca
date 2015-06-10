@@ -25,7 +25,7 @@
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1
 
-// actually uses panic - see panic.h
+// actually uses panic - see panic.h and panic.c
 void exit(u8 code) __attribute__((noreturn));
 
 u32 system(string command); // with sh -c
@@ -37,18 +37,26 @@ bool system_check_nosh(string command, string *args, ulen count);
 void systemq(string command);
 void systemq_nosh(string command, string *args, ulen count);
 
-// system exited normally, as opposed to sent a signal
+// these checking macros are all tied very closely to system.c
+
+// system exited normally, as opposed to sent a signal or wasn't created properly
 #define SYS_EXITED(x) (((x) & 0x100) != 0)
+// a signal killed the program
+#define SYS_SIGNALED(x) (((x) & 0x300) == 0)
+// the process could not be waited for (used in system and system_nosh only)
+#define SYS_FAILED(x) ((x) == 0x200)
+
 // exit code - or, alternatively, the signal that killed the process (based on SYS_EXITED)
 #define SYS_CODE(x) ((x) & 0xFF)
-// if either exited normally AND exit code was zero
-#define SYS_EXIT_NORMAL(x) (((x) & 0x1FF) == 0x100)
+// if both exited normally AND exit code was zero
+#define SYS_EXIT_NORMAL(x) (((x) & 0x3FF) == 0x100)
 
 u32 get_argument_count(void);
 string get_argument(u32 id);
 string get_argument_opt(u32 id, string defarg);
 string *get_arguments(void);
 string get_program_reference(void);
+string *get_environment(void);
 
 extern u8 camain(u32 count, string *args);
 
