@@ -9,13 +9,18 @@ RAW_TESTS=$(TESTS_C:.c=)
 TESTS=$(addprefix $(TESTBUILDDIR)/, $(RAW_TESTS))
 RUN_TESTS=$(addprefix test_, $(RAW_TESTS))
 
+EXTRA_BUILDS=
+EXTRA_CLEANS=
+
+-include local.mk
+
 .PHONY: $(RUN_TESTS)
 
-tests: $(RUN_TESTS)
+tests: $(EXTRA_BUILDS) $(RUN_TESTS)
 
 $(RUN_TESTS): test_%: $(TESTBUILDDIR)/%
 	@$(call echo,3,RUNNING TEST,$<)
-	@$< || ($(call echo,1,FAILED,$<) && exit 1)
+	@$< . $(TESTBUILDDIR) || ($(call echo,1,FAILED,$<) && exit 1)
 	@$(call echo,2,PASSED,$<)
 
 LIBCA=$(BUILDDIR)/libca.a
@@ -29,4 +34,4 @@ $(TESTBUILDDIR)/%: %.c $(LIBCA)
 	@$(call echo,2,COMPILED,$<)
 
 clean:
-	rm -f $(TESTS)
+	rm -f $(TESTS) $(EXTRA_CLEANS)
