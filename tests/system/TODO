@@ -1,14 +1,8 @@
 system.h:
-	u32 system(string command); // with sh -c
-	u32 system_nosh(string command, string *args, ulen count); // raw
-	bool system_check(string command);
-	bool system_check_nosh(string command, string *args, ulen count);
-	void systemq(string command);
-	void systemq_nosh(string command, string *args, ulen count);
+	Test system*() results with receiving signals.
 
-	#define SYS_EXITED(x) (((x) & 0x100) != 0)
-	#define SYS_CODE(x) ((x) & 0xFF)
-	#define SYS_EXIT_NORMAL(x) (((x) & 0x1FF) == 0x100)
+	#define SYS_SIGNALED(x) (((x) & 0x300) == 0)
+	#define SYS_FAILED(x) ((x) == 0x200)
 
 	u32 get_argument_count(void);
 	string get_argument(u32 id);

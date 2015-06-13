@@ -18,12 +18,12 @@
 */
 
 #include <system.h>
-#include <assert.h>
 #include <string.h>
-#include <stream.h>
+#include <assert.h>
 
-CAMAIN0() {
-	// really basic, incomplete test
-	systemq("true");
-	return 0;
+CAMAIN(argc, argv) {
+	assert(argc == 2);
+	assert(streq(argv[0], "--retval"));
+	u8 retval = parseu8(argv[1], NULL);
+	return retval;
 }
