@@ -19,7 +19,18 @@
 
 #include <system.h>
 #include <panic.h>
+#include <stream.h>
+#include <string.h>
 
-CAMAIN0() {
-	panic_static("I have failed.");
+CAMAIN(argc, argv) {
+	if (argc == 1) {
+		if (streq(argv[0], "STATIC")) {
+			panic_static("I have failed.");
+		} else if (streq(argv[0], "DYNAMIC")) {
+			panic("I have failed.");
+		}
+	}
+	writes(stderr, "Failed to fail.");
+	writes(stdout, "Failed to fail.");
+	return 0; // not the expected result, so this is how we signal real failure
 }

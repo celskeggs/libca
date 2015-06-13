@@ -29,11 +29,19 @@ void exit(u8 code) {
 	_panic_do((error) {ERR_SYSEXIT, code, "program exit"});
 }
 
+#define NULL_PTR_ERROR "paniced with NULL message"
+
 void panic_static(string str) {
+	if (str == NULL) {
+		str = NULL_PTR_ERROR;
+	}
 	_panic_do((error) {ERR_STATIC, 142, str});
 }
 
 void panic(string str) {
+	if (str == NULL) {
+		panic_static(NULL_PTR_ERROR);
+	}
 	_panic_do((error) {ERR_MALLOCED, 142, strdup(str)});
 }
 
@@ -78,6 +86,12 @@ static void _panic_do(error err) {
 }
 
 bool recover(recover_callback cb, void *param, error *ret) {
+	if (ret == NULL) {
+		panic_static("recover() called with NULL error return target");
+	} else if (cb == NULL) {
+		panic_static("recover() called with NULL callback");
+	}
+
 	struct recover_stack_entry *last = stack_top;
 
 	struct recover_stack_entry new_ent;

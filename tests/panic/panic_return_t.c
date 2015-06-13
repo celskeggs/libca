@@ -28,9 +28,11 @@ CAMAIN(count, args) { // args: { srcdir, builddir }
 		writes(stderr, "bad arguments to test!\n");
 		return 1;
 	}
+
+	// with static
 	char temp[BUFSIZ];
 	strmov(temp, BUFSIZ, args[1]);
-	strapnd(temp, BUFSIZ, "/panic_return_target 2>");
+	strapnd(temp, BUFSIZ, "/panic_return_target STATIC 2>");
 	strapnd(temp, BUFSIZ, args[1]);
 	strapnd(temp, BUFSIZ, "/panic_return_output");
 	if (system_check(temp)) {
@@ -46,5 +48,25 @@ CAMAIN(count, args) { // args: { srcdir, builddir }
 		writes(stderr, "panic printed the wrong output!\n");
 		return 3;
 	}
+
+	// without static
+	strmov(temp, BUFSIZ, args[1]);
+	strapnd(temp, BUFSIZ, "/panic_return_target DYNAMIC 2>");
+	strapnd(temp, BUFSIZ, args[1]);
+	strapnd(temp, BUFSIZ, "/panic_return_output");
+	if (system_check(temp)) {
+		writes(stderr, "panic doesn't work!\n");
+		return 2;
+	}
+	strmov(temp, BUFSIZ, "cmp ");
+	strapnd(temp, BUFSIZ, args[0]);
+	strapnd(temp, BUFSIZ, "/panic_return_expected ");
+	strapnd(temp, BUFSIZ, args[1]);
+	strapnd(temp, BUFSIZ, "/panic_return_output");
+	if (!system_check(temp)) {
+		writes(stderr, "panic printed the wrong output!\n");
+		return 3;
+	}
+
 	return 0;
 }
