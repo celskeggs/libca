@@ -68,7 +68,7 @@ static void _panic_do(error err) {
 			writes(stderr, "top-level exception: ");
 			writes(stderr, err.str);
 			writech(stderr, '\n');
-			lsc_exit(err.exit_code);
+			lsc_exit(err.exit_code); // TODO: Raise SIGABRT instead of exiting on panic.
 		} else if (err.type == ERR_MALLOCED) {
 			writes(stderr, "top-level exception: ");
 			writes(stderr, err.str);
